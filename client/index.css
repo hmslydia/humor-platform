@@ -1,0 +1,109 @@
+.joke_text{
+  width: 500px;
+  border: 1px solid black;
+  margin: 10px;
+  padding: 10px;
+}
+
+.freeTextDiv{
+  /* margin-left: 50px; */
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    width: 600px;
+}
+
+.title{
+  width: 100%;
+  font-size: xx-large;
+  font-family: "arial black";
+}
+
+#yesHighlight{
+  /* font-weight: bold; */
+  
+}
+
+#insultExemplarText{
+  /* background-color: yellow; */
+  border: 1px solid black;
+  width: 300px;
+  margin: 10px;
+  padding: 10px;
+}
+
+#insultExemplar{
+  display: block;
+    margin-left: auto;
+    margin-right: auto;  
+}
+
+.exemplarContainer{
+  margin: 25px;
+}
+
+.buttonContainer{
+  text-align: center;
+}
+.startButton{
+  padding: 20px;
+  background-color: #33CC33;
+  border:2px solid;
+  border-radius:15px;
+  /* margin: 20px;*/
+}
+
+.loginTeaserImage{
+  height: 150px;
+}
+
+
+.loginStuff{
+  padding: 20px;
+  background-color: #33CC33;
+  border:2px solid;
+  border-radius:15px;
+  margin: 20px; 
+
+}
+
+#startButton{
+  margin:20px;
+}
+/*
+#login-buttons{
+  margin-top: 50px;
+}
+#login-sign-in-link{
+   padding: 20px;
+  background-color: #33CC33;
+  border:2px solid;
+  border-radius:15px;
+  margin: 20px; 
+    
+}
+
+#login-dropdown-list{
+  top: -100px; 
+  border: 5px solid #666;
+}
+
+.loginNow{
+   padding: 20px;
+  background-color: #33CC33;
+  border:2px solid;
+  border-radius:15px;
+  margin: 20px; 
+  
+}
+*/
+.error{
+  color: red;
+}
+
+.answer_selected{
+  font-weight: bold;
+  color: red;
+}

@@ -1,0 +1,10 @@
+{
+  "packages": {
+    "iron-router": {},
+    "accounts-guest": {},
+    "jquery-ui": {},
+    "bootstrap-3": {},
+    "accounts-ui-bootstrap-3": {},
+    "user-session": {}
+  }
+}

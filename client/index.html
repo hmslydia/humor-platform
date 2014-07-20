@@ -1,0 +1,195 @@
+<head>
+  <title>Humor Research</title>
+</head>
+
+<template name='radio'>
+
+{{#each radioButtons}}
+  <input type="radio" name="{{this.name}}" value="{{this.value}}" >
+  <span class='{{this.class}}' id="{{this.class}}_{{this.value}}">{{this.text}}</span><br>
+{{/each}}
+</template>
+
+<template name='thanks'>
+
+Thanks!
+</template>
+
+
+
+
+<template name='header'>
+  <div class="navbar navbar-default" role="navigation">
+      <div class="navbar-header">
+          <a class="navbar-brand" href="http://localhost:3000/">Humor Analysis</a>
+      </div>
+      <div class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+              <li class="active"><a href="http://localhost:3000/InsultAnalysis">Insults</a></li>
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+              {{> loginButtons }} <!-- here -->
+          </ul>
+      </div>
+  </div>
+</template>
+
+<template name='welcome'>
+  {{> header}}
+
+  <div class='center' >
+   
+    <div align="center" class='title'>
+  Why are jokes funny?
+    </div>
+    <br>
+    With human and machine intelligence, we're going to figure out once and for all what makes jokes funny. The future of humor is in your hands... help us analyze all the jokes on the web.<br>
+    <br>
+    Example:
+    <div align='center' class='exemplarContainer'>
+      <div id="insultExemplarText" align="left">
+        If God had wanted us to be concerned for the plight of the toads, he would have made them cute and furry.
+      </div>
+      
+      <img src="insultAnalysisExemplar.png" id='insultExemplar' >
+    
+    </div>
+
+    Disclaimer: Some jokes may contain explicit content (yay!) Not for children under 18.
+    <br>
+    {{#if currentUser}}
+      <div class='buttonContainer'>
+        <br>
+        Welcome back, {{displayName}}<br>
+        <button id='resumeButton' class='loginStuff'><div>Resume analyzing! </div></button>
+      </div>      
+    {{else}}
+      <div class='buttonContainer'>
+        <button id="googleLoginButton" class='loginStuff'> Log in with Google. </button> OR
+        <button id='startButton'><div>Start analyzing now! </div></button>
+      </div>
+    {{/if}}
+  </div>
+</template>
+
+
+
+
+
+
+<template name="insultAnalysisContainer">
+  {{> header}}
+   
+   <div class='center' >
+    <div class='title'>Does this joke contain an insult?</div>
+    <div class='joke_text'>
+    {{{joke_text}}}
+    </div>
+
+      <div class='analysisDiv' style='width: 300px; float:left;'>
+        {{> insultAnalysis}}
+        <button id='next'>Next Joke</button>
+      </div>
+
+      <div class='analysisDiv' style='width: 200px; float:left;'>
+        <button id="dontGetIt" style='float: right;'> I don't get it </button>
+      </div>
+       
+   </div>
+</template>
+
+
+
+
+<template name="insultAnalysis">
+  <div>
+    Does this joke contain an insult?<br>
+    <table>
+    <tr>
+      <td> <input type="radio" name="insult" value="yes" {{insultYesChecked}}></td>
+      <td> <span id ='insult_yes' class='insult_answer'>Yes</span></td>
+    </tr>
+    
+    <tr>
+      <td></td>
+      <td>
+      <div id="insultFreeText" style="display:none;" class='freeTextDiv'> 
+        Who is it insulting?<br>
+        <textarea class='freeText'> </textarea>
+      </div>
+    
+      </td>
+    </tr>
+    
+    <tr>
+    <td><input type="radio" name="insult" value="no" {{insultNoChecked}}></td>
+    <td><span id ='insult_no' class='insult_answer'>No</span></td>
+    </tr>
+    <tr>
+    <td><input type="radio" name="insult" value="unclear" {{insultUnclearChecked}}></td>
+    <td><span id ='insult_unclear' class='insult_answer'>Unclear</span></td>
+    
+  
+    </tr>
+    </table>
+    
+  </div>
+</template>
+
+
+
+
+
+<template name="loginReminder">
+{{>header}}
+ <div class='center' >
+
+    <div align="center" class='title'>
+Please consider... logging in!
+    </div>
+    <br>
+    <div align="center" >
+    These awesome people<sup>*</sup> have already logged in:
+    <table>
+      <tr>
+        <td><img src='optimusprime.jpg' class='loginTeaserImage'></td>
+        <td><img src='xena-disc.jpeg' class='loginTeaserImage'></td>
+        <td><img src='Supergrover.jpg' class='loginTeaserImage'></td>
+      
+      </tr>
+    </table>
+    <br>
+    * Any resemblance to actual celebrities is possibly coincidental.
+    <br>
+    <br>
+    Once you log in we can save your progress so you don't have to redo work.<br>
+    
+      {{#if currentUser}}
+        Woohoo! Please continue saving the world...<br>
+        <button id="resumeTasks" class='loginStuff'> Continue </button>
+      {{else}}
+      <table>  
+      <tr>
+        <td> 
+          <div style='padding:20px; margin: 20px; border: 1px solid black; height: 250px' align="center">
+        	  <span class="title">Be a hero! </span>
+        		<br>
+        			<button id="googleLoginButton" class='loginStuff'> Log in with Google. </button>
+        		
+        	
+              </div>
+         </td>
+         <td>...or...</td>
+        <td>
+          <div style='padding:20px'>
+            <button class='skipLogin'><div>Skip logging in.<br>Postpone heroic status.</div></button>
+          </div>
+        </td>
+        </tr>
+      </table>
+      
+      {{/if}}
+    </div>
+  </div>
+</template>
+
