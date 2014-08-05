@@ -5,6 +5,7 @@
     "jquery-ui": {},
     "bootstrap-3": {},
     "accounts-ui-bootstrap-3": {},
-    "user-session": {}
+    "user-session": {},
+    "accounts-entry": {}
   }
 }

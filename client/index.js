@@ -33,10 +33,8 @@ It should then send you back to a summary of your work.
 */
 
 
-Jokes = new Meteor.Collection("jokes");
 
-Analysis = new Meteor.Collection("analysis");
-analysisHandle = Meteor.subscribe('analysis');
+//analysisHandle = Meteor.subscribe('analysis');
 
 
 /////////////////////////////
@@ -46,10 +44,8 @@ analysisHandle = Meteor.subscribe('analysis');
 getJokeIndex = function(){
   if (Session.get('joke_index') != undefined){
     return parseInt(Session.get('joke_index'))
-  }
-  var currentPath = Router.current().path
-  if (currentPath.substring(0,15) == "/insultAnalysis"){
-    var joke_index = parseInt(currentPath.substring(16))
+  } else {
+    var joke_index = parseInt( Router.current().params["joke_index"] )
     Session.set('joke_index',joke_index) 
     return joke_index
   }
@@ -74,148 +70,38 @@ Template.welcome.displayName = function() {
 		return '';
 	};
 
+startOrResume = function(){
+    var joke_index = 0
+    
+    if (Session.keys["joke_index"] != undefined){
+      joke_index = Session.get('joke_index')
+    }
+    
+    if (Meteor.user()){
+      joke_index = Meteor.user().profile.joke_index 
+    }
+
+    Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: joke_index})  
+}
 
 Template.welcome.events({
   'click #googleLoginButton': function() {
     Meteor.loginWithGoogle();
   },
   'click #resumeButton': function() {
-    var joke_index = Meteor.user().profile.joke_index || 0
-    Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: joke_index})
+    startOrResume()
   },
   'click #startButton': function(){
-    Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: 0})
+    startOrResume()
   }
   
 })
 
-/////////////////////////////
-// Insult Analysis
-/////////////////////////////
 
-submissionValid = function(){
-  //is there at least one radio button checked?
-  var checkedElement = $('input:radio[name=insult]:checked');
-  if (checkedElement.length == 0){
-    alert('Please select Yes, No or Unclear (or select "I don\'t know.")')
-    return false;
-  }
-  if ($(checkedElement).val() == "yes" && $('#insultFreeText textarea').val().trim() == ""){
-    console.log($('#insultFreeText textarea').val().trim())
-    alert('Please select say who or what is being insulted.')
-    return false;
-  }
-  return true;
-}
 
-highlightCurrentAnswer = function(insultYNval){
-  $('.insult_answer').each(function(){
-    $(this).removeClass('answer_selected')
-  })
-  $('#insult_'+insultYNval).addClass('answer_selected')
-}
-
-Template.insultAnalysis.events({
-  'change input:radio[name=insult]': function(){    
-    var element = $('input:radio[name=insult]:checked');
-    var insultYNval = $(element).val();
-    
-    highlightCurrentAnswer(insultYNval)
-    
-    if (insultYNval == 'yes'){      
-      $('#insultFreeText').show()
-    }else{
-      $('#insultFreeText').hide()
-    }
-  }  
-})
-
-submitJokeAnalysis = function () {
-  var insultRadio = $('input:radio[name=insult]:checked');
-  var insultYNval = $(insultRadio).val();
-  var insultFreeText = $('#insultFreeText textarea').val()
-  Meteor.call('submitAnalysis', {
-      ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
-      insultYN: insultYNval,
-      insultFreeText: insultFreeText,
-      dontGetIt: false,
-    }, function(result){
-      goToNextJoke()
-    }
-    
-  )
-  /*
-  Analysis.insert({
-    joke_id: getJokeId(),
-    user_id: getUserId(),
-    user_account: (Meteor.user() == true),
-    insultYN: insultYNval,
-    insultFreeText: insultFreeText
-  })
-  */    
-}
-  
-submitDontGetIt = function (){   
-  Meteor.call('submitAnalysis', {
-      ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
-      dontGetIt: true,
-    }, function(result){
-      goToNextJoke()
-    }    
-  )  
-} 
-  
-goToNextJoke = function (skipReminder) {
-  //console.log('go to next joke')
-  
-  var last_joke_index = 25
-  var joke_index = getJokeIndex()
-  var next_joke_index = parseInt(joke_index) + 1
-  console.log("joke_index: "+joke_index)
-  if (next_joke_index == last_joke_index){
-    Router.go('thanks')
-    return
-  }
-  
-  if (!skipReminder && !Meteor.userId() && (next_joke_index % 3 == 0)){
-    Router.go('loginReminder')
-    return 
-  }
-
-  Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: next_joke_index})
-  
-}
-
-clearData = function (){
-  
-  $('.freeTextDiv').each(function(){
-    $(this).hide()
-  }) 
-   
-  $('.freeText').each(function(){
-    $(this).val("")
-  })
-
-  $('input:radio').each(function(){
-      $(this).prop('checked', false); 
-  });
-  
-  highlightCurrentAnswer()
-}
-
-Template.insultAnalysisContainer.events({
-  'click #next': function(){
-    if( submissionValid() ){
-      submitJokeAnalysis()
-      clearData()
-    }
-  },
-  
-  'click #dontGetIt': function() {
-    submitDontGetIt()
-    clearData()
+Template.header.events({
+  'click #analyze': function(){
+    startOrResume()
   }
 })
 
@@ -227,7 +113,7 @@ Template.loginReminder.events({
     Meteor.loginWithGoogle();
   },
   
-  'click .skipLogin': function(){
+  'click #skipLogin': function(){
     var skipReminder = true
     goToNextJoke(skipReminder)
   },
@@ -237,9 +123,68 @@ Template.loginReminder.events({
   }
 });
 
+
+/////////////////////////////
+// Encouragement - Waypoints
+/////////////////////////////
+Template.waypoint.numJokes = function(){
+  return getJokeIndex() + 1
+}
+
+Template.waypoint.events({
+  'click #googleLoginButton': function() {
+    Meteor.loginWithGoogle();
+  },
+  
+  'click #tenMore': function(){
+    var skipReminder = true
+    goToNextJoke(skipReminder)
+  },
+  
+  'click #goHome': function(){
+    Router.go('/')
+  }
+});
+
+
+
+
+
+
+/////////////////////////////
+// Set IP
+/////////////////////////////
+
+myIP = function () {
+    if (window.XMLHttpRequest) xmlhttp = new XMLHttpRequest();
+    else xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+
+    xmlhttp.open("GET","http://api.hostip.info/get_html.php",false);
+    xmlhttp.send();
+
+    hostipInfo = xmlhttp.responseText.split("\n");
+
+    for (i=0; hostipInfo.length >= i; i++) {
+        ipAddress = hostipInfo[i].split(":");
+        if ( ipAddress[0] == "IP" ) return ipAddress[1];
+    }
+
+    return false;
+}
+
+Meteor.startup(function(){  
+  Deps.autorun(function(){
+    if( !Session.get('ip')){
+      Session.set('ip', myIP())
+    }
+  });
+})
+
+
 /////////////////////////////
 // Radio
 /////////////////////////////
+/*
 var spanClass = 'insult_answer'
 var name = 'insult'
 
@@ -297,79 +242,5 @@ Template.radio.events({
     highlightSelection(this)  
   }
 });
+*/
 
-
-
-/////////////////////////////
-// Routes
-/////////////////////////////
-
-myIP = function () {
-    if (window.XMLHttpRequest) xmlhttp = new XMLHttpRequest();
-    else xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-
-    xmlhttp.open("GET","http://api.hostip.info/get_html.php",false);
-    xmlhttp.send();
-
-    hostipInfo = xmlhttp.responseText.split("\n");
-
-    for (i=0; hostipInfo.length >= i; i++) {
-        ipAddress = hostipInfo[i].split(":");
-        if ( ipAddress[0] == "IP" ) return ipAddress[1];
-    }
-
-    return false;
-}
-
-Meteor.startup(function(){  
-  Deps.autorun(function(){
-    if( !Session.get('ip')){
-      Session.set('ip', myIP())
-    }
-  });
-})
-
-
-Router.map(function(){
-  this.route('welcome', { 
-    path: '/' 
-  })
-
-  this.route('loginReminder', { 
-    path: 'loginReminder' ,
-  })
-  
-   this.route('insultAnalysisContainerWithJokeIndex',{
-      path: '/insultAnalysis/:joke_index',
-      waitOn: function(){ 
-        var joke_index = parseInt(this.params.joke_index)
-        return Meteor.subscribe('jokesByIndex', joke_index) 
-      },
-      template: 'insultAnalysisContainer',
-      data: function(){
-          
-          var joke_index = parseInt(this.params.joke_index)
-          console.log("joke_index (data): "+joke_index)
-          var joke_text = Jokes.findOne().joke_text
-          return {joke_text: joke_text} 
-      },
-      onAfterAction: function(){
-        Session.set('joke_index', this.params.joke_index)
-        console.log("joke_index (after action): "+this.params.joke_index)
-      }
-  }); 
-  
-  this.route('radio')
-  
-  this.route('thanks')
-
-});
-
-Router.configure({
-  load: function() {
-    $('html, body').animate({
-      scrollTop: 0
-    }, 400);
-    $('.joke_text').hide().fadeIn(800);
-  }
-});

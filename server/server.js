@@ -1,18 +1,6 @@
-Jokes = new Meteor.Collection("jokes");
 
-Meteor.publish('jokesByIndex', function(joke_index){
-  var joke_id = joke_id_order[joke_index]
-  return Jokes.find(joke_id)
-})
-
-
-Analysis = new Meteor.Collection("analysis");
-Meteor.publish('analysis', function () {
-	return Analysis.find({});
-});
-
-var max_num_jokes = 100
-var joke_id_order = []
+max_num_jokes = 100
+joke_id_order = []
 
 Meteor.startup(function () {	
   if (Jokes.find().count() === 0) {
@@ -23,7 +11,8 @@ Meteor.startup(function () {
     }
   }
   if (joke_id_order.length == 0){
-    joke_id_order = _.pluck(Jokes.find().fetch(), "_id")  }
+    joke_id_order = _.pluck(Jokes.find().fetch(), "_id")  
+  }
 })
 
 Meteor.methods({
@@ -42,7 +31,6 @@ Meteor.methods({
     
     var joke_index = parseInt(params.joke_index)
     var joke_id = joke_id_order[joke_index]
-    console.log(joke_id)
     analysisParams.joke_id = joke_id
     
     Analysis.insert(analysisParams)

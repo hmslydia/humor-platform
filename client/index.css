@@ -1,44 +1,38 @@
 .joke_text{
-  width: 500px;
   border: 1px solid black;
-  margin: 10px;
   padding: 10px;
-}
-
-.freeTextDiv{
-  /* margin-left: 50px; */
-}
-
-.center {
-    margin-left: auto;
-    margin-right: auto;
-    width: 600px;
 }
 
 .title{
-  width: 100%;
   font-size: xx-large;
   font-family: "arial black";
+  padding-bottom: 15px;
 }
 
-#yesHighlight{
-  /* font-weight: bold; */
+#next{
   
 }
 
+#googleLoginButton{
+ margin: 20px; 
+}
+
+#tenMore{
+  margin-left: 20px;  
+}
+
+#goHome{
+  margin-top: 20px;
+   margin-left: 20px;
+}
+
+.top-buffer { margin-top:20px; }
+
 #insultExemplarText{
-  /* background-color: yellow; */
   border: 1px solid black;
-  width: 300px;
-  margin: 10px;
   padding: 10px;
 }
 
-#insultExemplar{
-  display: block;
-    margin-left: auto;
-    margin-right: auto;  
-}
 
 .exemplarContainer{
   margin: 25px;
@@ -57,6 +51,8 @@
 
 .loginTeaserImage{
   height: 150px;
+  margin: 10px;
+  border: 1px solid black;
 }
 
 
@@ -69,41 +65,68 @@
 
 }
 
+
+.attractiveButton{
+  padding: 20px;
+  background-color: #FFA500;
+  border:2px solid;
+  border-radius:15px;
+  /* margin: 20px; */
+
+}
+
 #startButton{
   margin:20px;
 }
-/*
-#login-buttons{
-  margin-top: 50px;
-}
-#login-sign-in-link{
-   padding: 20px;
-  background-color: #33CC33;
-  border:2px solid;
-  border-radius:15px;
-  margin: 20px; 
-    
-}
 
-#login-dropdown-list{
-  top: -100px; 
-  border: 5px solid #666;
-}
-
-.loginNow{
-   padding: 20px;
-  background-color: #33CC33;
-  border:2px solid;
-  border-radius:15px;
-  margin: 20px; 
-  
-}
-*/
 .error{
   color: red;
 }
 
 .answer_selected{
   font-weight: bold;
+  color: blue;
+}
+
+#progress{
+  color:blue;
+}
+
+.radio_answer_text{
+  margin-left:  5px;
+}
+
+tr.spaceUnder > td {
+  padding-bottom: .5em;
+}
+
+.freeTextDivQuestion{
+  padding-bottom: 5px;
+}
+/*
+
+Examples for Instruction Pages
+
+*/
+.example_yes{
+  color: green;
+  font-weight: bold;
+}
+
+.example_no{
   color: red;
+  font-weight: bold;
+}
+
+.example_unclear{
+  color: blue;
+  font-weight: bold;
+}
+
+.example_question{
+  /* font-weight: bold; */
+}
+
+.example_answer{
+  font-weight: bold;
 }
