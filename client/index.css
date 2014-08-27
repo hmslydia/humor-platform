@@ -9,9 +9,10 @@
   padding-bottom: 15px;
 }
 
-#next{
-  
+.freeText{
+  width: 300px;
 }
+
 
 #googleLoginButton{
  margin: 20px; 

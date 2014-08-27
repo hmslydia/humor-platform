@@ -32,9 +32,17 @@ It should then send you back to a summary of your work.
 // (on missions, I can switch you between them, if I want to)
 */
 
+/*
+Session Variables:
+
+current_mission = "insult0"
+// but I really need a current "mission", something seperate from the concept of a 
+//current_analysis_type
+
+joke_indexes = {'insult': 0, 'connect_the_dots': 0}
 
 
-//analysisHandle = Meteor.subscribe('analysis');
+*/
 
 
 /////////////////////////////
@@ -42,6 +50,19 @@ It should then send you back to a summary of your work.
 /////////////////////////////
 
 getJokeIndex = function(){
+  if( Session.get('joke_indexes') != undefined && Session.get('analysis_type') != undefined){
+    var analysis_type = Session.get('analysis_type')
+    var joke_index = Session.get('joke_indexes')[analysis_type]
+    return parseInt(joke_index)
+  } else {
+    var joke_index = parseInt( Router.current().params["joke_index"] )
+    //Session.set('joke_index',joke_index) 
+    /*
+    Should I try to st the session variables if they are unset
+    */
+    return joke_index    
+  }
+/*
   if (Session.get('joke_index') != undefined){
     return parseInt(Session.get('joke_index'))
   } else {
@@ -49,6 +70,8 @@ getJokeIndex = function(){
     Session.set('joke_index',joke_index) 
     return joke_index
   }
+  */
+  
 }
 
 /////////////////////////////
@@ -70,18 +93,86 @@ Template.welcome.displayName = function() {
 		return '';
 	};
 
+createJokeIndexes = function(){
+  var obj = {}
+  _.each(analysis_types, function(analysis_type){
+    obj[analysis_type] = 0
+  })
+  return obj
+}
+
+/*
+This function is called when users click "Start Analyzing" on the home page, or 
+anytime after that to resume their mission
+
+We need to see if this user has been here before.
+First, we look at their profile and try to set
+- mission
+- analysis_type
+- joke_index
+
+If the data is neither in their profile or their profile or their session, 
+I set it in their session.
+
+I don't need it in their profile because that is set when their account is created
+*/
 startOrResume = function(){
-    var joke_index = 0
+   
+    var mission = undefined
+    var analysis_type = undefined
+    var joke_index = undefined 
     
-    if (Session.keys["joke_index"] != undefined){
-      joke_index = Session.get('joke_index')
-    }
-    
-    if (Meteor.user()){
-      joke_index = Meteor.user().profile.joke_index 
+    //If I can get data from the session, I should
+    if( Session.get('analysis_type') != undefined && Session.get('joke_indexes') != undefined){
+      //mission = Session.get('mission') 
+      analysis_type = Session.get('analysis_type') 
+      //Get the joke_index for this analysis type, if there is one.
+      joke_index = Session.get('joke_indexes')[analysis_type]
+            
     }
 
-    Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: joke_index})  
+    //if mission is still undefined, then we need to set it,
+    // either from the profile, or from defaults
+    if (analysis_type === undefined){
+      //if they are logged in, then I can check their profile
+      if (Meteor.user()){
+        if (Meteor.user().profile.mission){
+          mission = Meteor.user().profile.mission
+          analysis_type = Meteor.user().profile.analysis_type
+          joke_index = Meteor.user().profile.joke_indexes[analysis_type]
+        }
+      }
+      
+      if (analysis_type === undefined){
+        mission = default_mission
+        analysis_type = default_analysis_type
+        joke_index = 0 
+      }
+      
+      Session.set('mission', mission)
+      Session.set('analysis_type', analysis_type)
+      var joke_indexes = createJokeIndexes()
+      Session.set('joke_indexes', joke_indexes)
+      
+    }
+
+    
+    //Get the previous joke_index for this analysis type, if there is one.
+    if (Session.get['joke_indexes'] != undefined && 
+            Session.get('joke_indexes')[analysis_type] != undefined){
+      joke_index = Session.get('joke_indexes')[analysis_type]
+    }
+    
+    console.log('joke_index', joke_index)
+    if (analysis_type == 'insult'){
+      Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: joke_index})  
+    }
+    
+    if (analysis_type == 'connect_the_dots'){
+      //console.log('connect_the_dots, joke_index', joke_index)
+      Router.go('connectTheDotsAnalysisContainerWithJokeIndex',{joke_index: joke_index})  
+    }
+    
 }
 
 Template.welcome.events({
@@ -100,7 +191,13 @@ Template.welcome.events({
 
 
 Template.header.events({
-  'click #analyze': function(){
+  'click #analyzeInsult': function(){
+    Session.set('analysis_type', 'insult')
+    startOrResume()
+  },
+  
+  'click #analyzeConnectTheDots': function(){
+    Session.set('analysis_type', 'connect_the_dots')
     startOrResume()
   }
 })
@@ -156,6 +253,7 @@ Template.waypoint.events({
 /////////////////////////////
 
 myIP = function () {
+/*
     if (window.XMLHttpRequest) xmlhttp = new XMLHttpRequest();
     else xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
 
@@ -170,6 +268,7 @@ myIP = function () {
     }
 
     return false;
+    */
 }
 
 Meteor.startup(function(){  
