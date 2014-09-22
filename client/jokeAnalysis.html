@@ -1,0 +1,171 @@
+<template name="jokeAnalysis">
+
+<div class='container'>
+    <div class="row">
+      <div class="col-md-12">
+        <div class='title'>Why is this funny?</div>
+      </div>
+    </div>  
+    
+    <div class="row">
+      
+      <div class="col-md-6">    
+        <div class='joke_text'>
+          {{{joke_text}}}
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <table>
+          <tr>
+            <td>Skip: </td>
+            <td>{{counts.skips}}</td>
+          </tr>
+          
+          <tr>
+            <td>Don't get it: </td>
+            <td>{{counts.dontGetIts}}</td>
+          </tr>
+    
+          <tr>
+            <td>Funny: </td>
+            <td>
+              Yes: {{counts.funnyYeses}}<br>
+              No: {{counts.funnyNos}}  <br>
+              Maybe: {{counts.funnyUnclears}}
+            </td>
+          </tr>
+        </table>
+      
+      </div>
+    </div>  
+      
+    <div class="row">
+        <div class="col-md-4">
+          {{> insultSummary}}
+        </div>
+        
+        <div class="col-md-4">
+          {{> connectTheDotsSummary}}
+        </div>
+        
+        <div class="col-md-4">
+            ExpectationViolation goes here
+        </div>
+        
+    </div>
+</div>
+
+</template>
+
+<template name="insultSummary">
+  <h3>Insult</h3>
+  Yes: {{counts.insultYeses}} {{#if eq myInsultData.insultYN "yes"}}<b>(you)</b>{{/if}} <br>
+  No: {{counts.insultNos}} {{#if eq myInsultData.insultYN "no"}}<b>(you)</b>{{/if}} <br>
+  Unclear: {{counts.insultUnclears}} {{#if eq myInsultData.insultYN "unclear"}}<b>(you)</b>{{/if}} <br>
+  
+  
+  {{#if myInsultData.hasComment}}
+    <div class="myInsultAnswer">
+    My answer: {{myInsultData.insultYN}}<br>
+    {{#if myInsultData.yesComment}}
+      <div>
+        Who: <b>{{myInsultData.insultWho}}</b> {{myInsultData.insultWhy}}<br>
+        
+        {{#if myInsultData.i_like}}
+          You and {{myInsultData.likeCount}} people like this
+        {{else}}
+          {{myInsultData.likeCount}} likes <br>
+        {{/if}}
+      </div>
+    {{/if}}
+    
+    {{#if myInsultData.unclearComment}}
+      <div>
+      Unclear: {{myInsultData.unclearWhy}}
+      </div>
+    {{/if}}
+    </div>
+  {{/if}}
+  
+  {{#if myInsultData.contributed}}
+  
+  {{else}}
+    <button id='addInsultAnalysis' class="btn btn-primary">Add Insult Analysis</button>
+    <div id="insultUI" style="display:none;">
+      {{> insultAnalysis}}
+      <button id='submitInsult' class="btn btn-primary">Submit</button>
+      <button id='closeInsult' class="btn btn-primary">X</button>
+    </div>
+  {{/if}}
+  
+  {{#each summary.insultYesExplain}}
+  <br>
+  <b>{{this.who}}</b><br>
+  {{this.why}}<br>
+  {{#if this.i_like}}
+  You and {{this.likeCount}} people like this
+  {{else}}
+  {{this.likeCount}} likes <button class="voteUp"> Like </button><br>
+  {{/if}}
+  
+  
+  {{/each}}
+</template>
+
+
+
+<template name="connectTheDotsSummary">
+  <h3>Connect the Dots</h3>
+  Yes: {{counts.connectTheDotsYeses}} {{#if eq myCTDData.connectTheDotsYN "yes"}}<b>(you)</b>{{/if}} <br>
+  No: {{counts.connectTheDotsNos}} {{#if eq myCTDData.connectTheDotsYN "no"}}<b>(you)</b>{{/if}} <br>
+  Unclear: {{counts.connectTheDotsUnclears}} {{#if eq myCTDData.connectTheDotsYN "unclear"}}<b>(you)</b>{{/if}} <br>
+  
+  
+  {{#if myCTDData.hasComment}}
+    <div class="myConnectTheDotsAnswer">
+    My answer: {{myCTDData.connectTheDotsYN}}<br>
+    {{#if myCTDData.yesComment}}
+      <div>
+        What: {{myCTDData.connectWhat}}<br>
+        
+        {{#if myCTDData.i_like}}
+          You and {{myCTDData.likeCount}} people like this
+        {{else}}
+          {{myCTDData.likeCount}} likes <br>
+        {{/if}}
+      </div>
+    {{/if}}
+    
+    {{#if myCTDData.unclearComment}}
+      <div>
+      Unclear: {{myCTDData.unclearWhy}}
+      </div>
+    {{/if}}
+    </div>
+  {{/if}}
+  
+  {{#if myCTDData.contributed}}
+  
+  {{else}}
+    <button id='addConnectTheDotsAnalysis' class="btn btn-primary">Add Connect The Dots<br> Analysis</button>
+    <div id="connectTheDotsUI" style="display:none;">
+      {{> connectTheDotsAnalysis}}
+      <button id='submitConnectTheDots' class="btn btn-primary">Submit</button>
+      <button id='closeConnectTheDots' class="btn btn-primary">X</button>
+    </div>
+  {{/if}}
+  
+  {{#each summary.insultYesExplain}}
+    <br>
+    <b>{{this.who}}</b><br>
+    {{this.why}}<br>
+    {{#if this.i_like}}
+      You and {{this.likeCount}} people like this
+      {{else}}
+      {{this.likeCount}} likes <button class="voteUp"> Like </button><br>
+    {{/if}}
+    
+  
+  {{/each}}
+</template>

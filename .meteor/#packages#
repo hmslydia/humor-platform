@@ -11,6 +11,4 @@ jquery-ui
 accounts-google
 bootstrap-3
 user-session
-iron:router
-accounts-ui
-
+accounts-entry

@@ -1,0 +1,16 @@
+.box{
+  padding: 10px;
+  background-color: #f2f2f2;
+  
+  
+  
+}
+
+.boxTitle{
+  font-weight: bold;
+}
+
+.boxExample{
+  padding: 10px;
+  font-style: italic;
+}
