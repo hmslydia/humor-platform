@@ -12,5 +12,6 @@ accounts-google
 bootstrap-3
 user-session
 iron:router
-accounts-ui
+rajit:accounts-ui-bootstrap-3
+accounts-password
 

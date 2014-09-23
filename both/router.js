@@ -5,7 +5,19 @@ Router.map(function(){
     yieldTemplates: {
       'header': {to: 'header'}
     },
-     
+      waitOn: function(){ 
+        
+        
+        return [Meteor.subscribe('joke_sequences'), Meteor.subscribe('units')]
+      },
+      data: function(){
+        return JokeSequences.find()
+      },
+      action: function(){
+        if(this.ready()){
+          this.render()
+        }
+      }
   })
 
   this.route('loginReminder', { 
@@ -28,14 +40,14 @@ Router.map(function(){
   /////////////////////////////////
   //INSULTS
   /////////////////////////////////
-   this.route('insultAnalysisContainerWithJokeIndex',{
+   this.route('insultAnalysisContainerWithJokeId',{
       
-      path: '/insultAnalysis/:joke_index',
+      path: '/insultAnalysis/:joke_id', //'/insultAnalysis/:joke_index',
       
       waitOn: function(){ 
-        
-        var joke_index = parseInt(this.params.joke_index)
-        return Meteor.subscribe('jokesByIndex', joke_index) 
+        var joke_id = this.params.joke_id
+        console.log(joke_id)
+        return Meteor.subscribe('jokesById', joke_id)        
       },
       
       layoutTemplate: 'standardLayout',
@@ -44,21 +56,13 @@ Router.map(function(){
       },
       
       template: 'insultAnalysisContainer',
-      
-      data: function(){        
-          var joke_index = parseInt(this.params.joke_index)
-          var joke_text = Jokes.findOne().joke_text
-          var numTotal = (Math.floor(joke_index / 10) + 1 ) * 10
-          return {joke_text: joke_text, numCompleted: (joke_index + 1), numTotal: numTotal} 
-      },
-      onAfterAction: function(){
-        Session.set('analysis_type', 'insult')
-        var joke_indexes = Session.get('joke_indexes')
-        joke_indexes['insult'] = parseInt(this.params.joke_index)
-        Session.set('joke_indexes', joke_indexes)
-        Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.joke_indexes.insult":this.params.joke_index}})
+
+      action: function(){
+        if(this.ready()){
+          this.render()
+        }
       }
-      
+
   }); 
 
   this.route('insultInstructions', {

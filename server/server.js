@@ -1,12 +1,4 @@
-
 max_num_jokes = 100
-
-//missions 
-insult0 = []
-connect_the_dots0 = []
-
-//should be depreciaed
-joke_id_order = []
 
 function getTime(){
   return (new Date()).getTime()
@@ -47,15 +39,9 @@ var joke_count_blank = {
   connectTheDotsUnclears; 0
 }
 */
-function createBlankJokeCounts() {
-  var obj = {joke_id: ""}
-  _.each(joke_count_categories, function(category){
-    obj[category] = 0
-  })
-  return obj
-}
 
-Meteor.startup(function () {	
+function populateJokes(){
+  //For each joke, insert a Joke and a corresponding JokeCount object.
   if (Jokes.find().count() === 0) {
     for (var i = 0; i < max_num_jokes; i++) {
 			var thisItem = jokes[i]
@@ -67,13 +53,39 @@ Meteor.startup(function () {
       JokeCounts.insert(joke_counts);
 
     }
-  }
-  if (joke_id_order.length == 0){
-    joke_id_order = _.pluck(Jokes.find().fetch(), "_id") 
+  }  
+}
+function createBlankJokeCounts() {
+  var obj = {joke_id: ""}
+  _.each(joke_count_categories, function(category){
+    obj[category] = 0
+  })
+  return obj
+}
+
+function populateJokeSequences(){
+  if (JokeSequences.find().count() === 0) { 
+    joke_id_order = _.pluck(Jokes.find().fetch(), "_id")
     
-    insult0 = _.pluck(Jokes.find().fetch(), "_id")
-    connect_the_dots0 = _.pluck(Jokes.find().fetch(), "_id")
-  }
+    var current_joke_sequence = []
+    var current_joke_sequence_index = 0
+    for(var i = 0; i< joke_id_order.length; i++){
+      var joke_id = joke_id_order[i]
+      current_joke_sequence.push(joke_id)
+      
+      if(current_joke_sequence.length == 20){
+        JokeSequences.insert({joke_ids: current_joke_sequence, index: current_joke_sequence_index})
+        current_joke_sequence_index++
+        current_joke_sequence = []        
+      }      
+    }
+  } 
+}
+
+Meteor.startup(function () {	
+  //For each joke, insert a Joke and a corresponding JokeCount object.
+  populateJokes()
+  populateJokeSequences()
 })
 
 Meteor.methods({
@@ -129,7 +141,8 @@ Meteor.methods({
     incrementJokeCounts(analysisParams)
     
     if (Meteor.user()){
-      Meteor.user().profile.joke_index = (joke_index + 1)
+      var new_joke_index = (joke_index + 1)
+      Meteor.users.update({_id:Meteor.user()._id}, {$set:{"profile.joke_index": new_joke_index }})
     } 
   },
   likeComment: function(params){
@@ -294,7 +307,6 @@ createSubsetDict = function (keys, oldDict){
   oldKeys = _.keys(oldDict)
   _.each(keys, function(key){
     if (_.contains(oldKeys, key)){
-
       subsetDict[key] = oldDict[key]
     }
   })
@@ -343,7 +355,6 @@ function incrementJokeCounts(analysisParams){
       fieldsToInc['insultUnclears'] = 1
     }
   }   
-  console.log('326')
   if (analysisParams['connectTheDotsYN'] != undefined){
     console.log('inside')
     var insultYN = analysisParams['connectTheDotsYN']
@@ -357,31 +368,62 @@ function incrementJokeCounts(analysisParams){
       fieldsToInc['connectTheDotsUnclears'] = 1
     }
   } 
-  console.log(fieldsToInc)
   var joke_id = analysisParams['joke_id']
-  console.log(analysisParams)
-  console.log(joke_id)
   JokeCounts.update({joke_id: joke_id}, {$inc: fieldsToInc })  
-  console.log(JokeCounts.find({joke_id: joke_id}).fetch())
-  
 }
 
+createDefaultUnits = function(user){
+  //if I create multiple units, then I will need to give them separate ids. 
+  //I could create them on the fly.
+  //Or I could create them with random ids (that they haven't done?
+  
+  var jokeSequence0 = JokeSequences.findOne({index:0})
+  var first_joke_id0 = jokeSequence0.joke_ids[0]
+  var unit_id0 = Units.insert({
+    user_id: user._id,
+    type: "sequence",
+    status: "notStarted",
+    joke_sequence_id: jokeSequence0._id,
+    joke_sequence_index: 0,
+    analysis_type: "insult",
+    totalNumJokes: jokeSequence0.joke_ids.length,
+    current_index: 0,
+    current_joke_id: first_joke_id0     
+  })
+  
+  var jokeSequence1 = JokeSequences.findOne({index:1})
+  var first_joke_id1 = jokeSequence1.joke_ids[0]
+  var unit_id1 = Units.insert({
+    user_id: user._id,
+    type: "sequence",
+    status: "notStarted",
+    joke_sequence_id: jokeSequence1._id,
+    joke_sequence_index: 0,
+    analysis_type: "connectTheDots",
+    totalNumJokes: jokeSequence1.joke_ids.length,
+    current_index: 0 ,
+    current_joke_id: first_joke_id1   
+  })
+  
+  user.profile.currentUnitId = unit_id0
+}
 
 Accounts.onCreateUser(function(options, user) {
   // We're enforcing at least an empty profile object to avoid needing to check
   // for its existence later.
   user.profile = options.profile ? options.profile : {};
-  
-  //user.profile.joke_sequence = joke_id_order
-  //user.profile.joke_index = 0
-  
+
+  createDefaultUnits(user)
+  /*  
   user.profile.mission = default_mission
   user.profile.analysis_type = default_analysis_type
+
+  // Keep track of what joke_id the user is on for each vertical.
   user.profile.joke_indexes = {}
   _.each(analysis_types, function(analysis_type){
     user.profile.joke_indexes[analysis_type] = 0
   })
-  
+  */
   return user;
 });
 

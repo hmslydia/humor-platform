@@ -3,8 +3,6 @@ accounts-google@1.0.0
 accounts-guest@0.0.6
 accounts-oauth@1.1.0
 accounts-password@1.0.1
-accounts-ui-unstyled@1.1.1
-accounts-ui@1.1.0
 application-configuration@1.0.2
 autoupdate@1.1.0
 base64@1.0.0
@@ -20,10 +18,12 @@ ctl@1.0.1
 ddp@1.0.8
 deps@1.0.3
 ejson@1.0.2
+email@1.0.2
 fastclick@1.0.0
 follower-livedata@1.0.1
 geojson-utils@1.0.0
 google@1.1.0
+handlebars@1.0.0
 html-tools@1.0.0
 htmljs@1.0.1
 http@1.0.5
@@ -36,7 +36,6 @@ iron:router@0.9.3
 jquery-ui@0.0.0
 jquery@1.0.0
 json@1.0.0
-less@1.0.8
 livedata@1.0.9
 localstorage@1.0.0
 logging@1.0.3
@@ -47,10 +46,12 @@ minimongo@1.0.3
 mobile-status-bar@1.0.0
 mongo-livedata@1.0.4
 mongo@1.0.5
+npm-bcrypt@0.7.7
 oauth2@1.1.0
 oauth@1.1.0
 observe-sequence@1.0.2
 ordered-dict@1.0.0
+rajit:accounts-ui-bootstrap-3@0.3.10
 random@1.0.0
 reactive-dict@1.0.2
 reactive-var@1.0.1
@@ -64,6 +65,7 @@ spacebars-compiler@1.0.2
 spacebars@1.0.1
 srp@1.0.0
 standard-app-packages@1.0.1
+stylus@1.0.4
 templating@1.0.6
 tracker@1.0.2
 ui@1.0.2

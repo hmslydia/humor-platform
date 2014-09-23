@@ -1,3 +1,25 @@
+JokeSequences = new Meteor.Collection("joke_sequences")
+/*
+joke_ids: [a,b,c,] //array of joke_ids
+index: //used for default joke_sequence creation
+*/
+
+Units = new Meteor.Collection("units")
+/*
+user_id: 
+type: "sequence" 
+status: notStarted/completed/inProgress
+
+//FIELDS FOR SEQUENCE TYPE
+joke_sequence_id: "asdf"
+joke_sequence_index: 10,
+analysis_type: "insult" // this also helps the router know where to go.
+totalNumJokes: 20 // this tells us how much progress there is.
+current_index: 0 //user dependent
+current_joke_id: 
+*/
+
+
 Jokes = new Meteor.Collection("jokes");
 /*
 

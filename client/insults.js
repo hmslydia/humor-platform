@@ -31,34 +31,12 @@ Template.insultAnalysis.events({
   },    
 })
 
-
-/*
-
-Template.insultAnalysis.events({
-  'change input:radio[name=insult]': function(){    
-    var element = $('input:radio[name=insult]:checked');
-    var insultYNval = $(element).val();
-    
-    highlightCurrentAnswer("insult", insultYNval)
-    
-    if (insultYNval == 'yes'){      
-      $('#insultFreeText').show()
-      $('#insulting-who').focus()
-    }else{
-      $('#insultFreeText').hide()
-    }
-    
-    if (insultYNval == 'unclear'){      
-      $('#insultUnclearFreeText').show()
-      $('#unclear-why').focus()
-    }else{
-      $('#insultUnclearFreeText').hide()
-    }
-  },
-   
+Template.insultAnalysisContainer.helpers({
+  joke_text: function(){
+    console.log(Jokes.findOne())
+    return Jokes.findOne().joke_text
+  }
 })
-
-*/
 Template.insultAnalysisContainer.events({
   'click #next': function(){
     if( submissionValid() ){
