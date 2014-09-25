@@ -5,19 +5,17 @@ Router.map(function(){
     yieldTemplates: {
       'header': {to: 'header'}
     },
-      waitOn: function(){ 
-        
-        
-        return [Meteor.subscribe('joke_sequences'), Meteor.subscribe('units')]
-      },
-      data: function(){
-        return JokeSequences.find()
-      },
-      action: function(){
-        if(this.ready()){
-          this.render()
-        }
+    waitOn: function(){         
+      return [Meteor.subscribe('joke_sequences'), Meteor.subscribe('jokes_in_sequence')]
+    },
+    data: function(){
+      return JokeSequences.find()
+    },
+    action: function(){
+      if(this.ready()){
+        this.render()
       }
+    }
   })
 
   this.route('loginReminder', { 
@@ -28,7 +26,7 @@ Router.map(function(){
     path: 'loginReminder' ,
   }),
   
-  this.route('mini-menu', { 
+  this.route('waypoint', { 
     path: 'waypoint' ,
     layoutTemplate: 'standardLayout',
     yieldTemplates: {
@@ -40,29 +38,31 @@ Router.map(function(){
   /////////////////////////////////
   //INSULTS
   /////////////////////////////////
-   this.route('insultAnalysisContainerWithJokeId',{
-      
-      path: '/insultAnalysis/:joke_id', //'/insultAnalysis/:joke_index',
-      
-      waitOn: function(){ 
-        var joke_id = this.params.joke_id
-        console.log(joke_id)
-        return Meteor.subscribe('jokesById', joke_id)        
-      },
-      
-      layoutTemplate: 'standardLayout',
-      yieldTemplates: {
-        'header': {to: 'header'}
-      },
-      
-      template: 'insultAnalysisContainer',
-
-      action: function(){
-        if(this.ready()){
-          this.render()
-        }
+  this.route('insultAnalysisContainerWithJokeId',{
+    path: '/insultAnalysis/:joke_id', 
+    
+    waitOn: function(){ 
+      var joke_id = this.params.joke_id
+      return Meteor.subscribe('jokesById', joke_id)        
+    },
+    
+    layoutTemplate: 'standardLayout',
+    yieldTemplates: {
+      'header': {to: 'header'}
+    },
+    
+    template: 'insultAnalysisContainer',
+    loadingTemplate: "thanks",
+    data: function(){  
+      if(this.ready()){
+        //console.log(Jokes.findOne()) 
+        var joke_text = Jokes.findOne().joke_text //we are only subscribed to the right joke
+        //console.log(Meteor.user())
+        var joke_index = Meteor.user().profile.currentSequenceIndex
+        var numTotal = (Math.floor(joke_index / 10) + 1 ) * 10        
+        return {joke_text: joke_text, numCompleted: (joke_index + 1), numTotal: numTotal} 
       }
-
+    }
   }); 
 
   this.route('insultInstructions', {
@@ -78,40 +78,34 @@ Router.map(function(){
   /////////////////////////////////
   //CONNECT THE DOTS
   ///////////////////////////////// 
-  
-   this.route('connectTheDotsAnalysisContainerWithJokeIndex',{
-      path: '/connectTheDotsAnalysis/:joke_index',
-      waitOn: function(){ 
-        var joke_index = parseInt(this.params.joke_index)
-        return Meteor.subscribe('jokesByIndex', joke_index) 
-      },
-      layoutTemplate: 'standardLayout',
-      yieldTemplates: {
-        'header': {to: 'header'}
-      },   
-      template: 'connectTheDotsAnalysisContainer',
-      data: function(){         
-          var joke_text = Jokes.findOne().joke_text //we are only subscribed to the right joke
-          
-          var joke_index = parseInt(this.params.joke_index)
-          var numTotal = (Math.floor(joke_index / 10) + 1 ) * 10
-          
-          return {joke_text: joke_text, numCompleted: (joke_index + 1), numTotal: numTotal} 
-      },
-      onAfterAction: function(){
-        
-        var analysis_type = "connect_the_dots"
-        var joke_indexes = Session.get('joke_indexes')
-        joke_indexes[analysis_type] = this.params.joke_index
-        Session.set('joke_indexes', joke_indexes)
-        Session.set('current_analysis_type', analysis_type)
-        
-        var profileSetting = "profile.joke_indexes."+analysis_type
-        Meteor.users.update({_id:Meteor.userId()}, 
-          {$set:{profileSetting: this.params.joke_index, 'profile.current_analysis_type': analysis_type}})
-        
-      }  
+    
+  this.route('connectTheDotsAnalysisContainerWithJokeId',{
+    path: '/connectTheDotsAnalysis/:joke_id', 
+    
+    waitOn: function(){ 
+      var joke_id = this.params.joke_id
+      return Meteor.subscribe('jokesById', joke_id)        
+    },
+    
+    layoutTemplate: 'standardLayout',
+    yieldTemplates: {
+      'header': {to: 'header'}
+    },
+    
+    template: 'connectTheDotsAnalysisContainer',
+    loadingTemplate: "thanks",
+    data: function(){  
+      if(this.ready()){
+        console.log(Jokes.findOne()) 
+        var joke_text = Jokes.findOne().joke_text //we are only subscribed to the right joke
+        //console.log(Meteor.user())
+        var joke_index = Meteor.user().profile.currentSequenceIndex
+        var numTotal = (Math.floor(joke_index / 10) + 1 ) * 10        
+        return {joke_text: joke_text, numCompleted: (joke_index + 1), numTotal: numTotal} 
+      }
+    }
   });   
+    
   this.route('connectTheDotsInstructions', {
     path: 'connectTheDotsInstructions',
     layoutTemplate: 'standardLayout',

@@ -3,10 +3,19 @@ Meteor.publish('joke_sequences', function(){
   return JokeSequences.find({})
 })
 
+Meteor.publish('jokes_in_sequence', function(){
+  /*
+  if(!this.userId)
+    return this.ready()
+  */
+  //user_id: this.userId()
+  return JokesInSequence.find({})
+})
+/*
 Meteor.publish('units', function(){
   return Units.find({})
 })
-
+*/
 
 
 ///

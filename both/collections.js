@@ -1,10 +1,22 @@
 JokeSequences = new Meteor.Collection("joke_sequences")
 /*
+id:
+name: "Random Beginning Sequence 1"
+*/
+
+JokesInSequence = new Meteor.Collection("jokes_in_sequence") 
+/*
+joke_id:
+sequence_id:
+order:
+*/
+
+/*
 joke_ids: [a,b,c,] //array of joke_ids
 index: //used for default joke_sequence creation
 */
 
-Units = new Meteor.Collection("units")
+//Units = new Meteor.Collection("units")
 /*
 user_id: 
 type: "sequence" 

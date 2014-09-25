@@ -30,10 +30,12 @@ submitJokeAnalysis = function () {
   var funnyRadio = $('input:radio[name=funny]:checked');
   var funnyYNval = $(funnyRadio).val();
  
+ 
   
   var f = Meteor.call('submitAnalysis', {
       ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
+      //joke_index: getJokeIndex(),
+      joke_id: Router.current().params.joke_id,
       insultYN: insultYNval,
       funnyYN: funnyYNval,
       insultWho: insultWho,
@@ -43,7 +45,7 @@ submitJokeAnalysis = function () {
       skip: false,
       context: 'insult'
     }, function(result){
-      updateNextJoke()
+      //updateNextJoke()
       goToNextJoke()
     } 
   )   
@@ -52,12 +54,13 @@ submitJokeAnalysis = function () {
 submitDontGetIt = function (){   
   Meteor.call('submitAnalysis', {
       ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
+      //joke_index: getJokeIndex(),
+      joke_id: Router.current().params.joke_id,
       dontGetIt: true,
       skip: false,
       context: 'insult'
     }, function(result){
-      updateNextJoke()
+      //updateNextJoke()
       goToNextJoke()
     }    
   )  
@@ -66,27 +69,105 @@ submitDontGetIt = function (){
 submitSkip = function (){   
   Meteor.call('submitAnalysis', {
       ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
+      //joke_index: getJokeIndex(),
+      joke_id: Router.current().params.joke_id,
       dontGetIt: false,
       skip: true,
       context: 'insult'
     }, function(result){
-      updateNextJoke()
+      //updateNextJoke()
       goToNextJoke()
     }    
   )  
 }
-  
+
+/*
+// Maybe this needs to be called when submit joke is called.  That's starting to sound very reasonable.
+
+// a) so it doesn't get called multiple times if a joke submitted accidentally multiple times.
+// b) because they both happen on the server and i don't know why they'd ever have to happen separately
+
+
 updateNextJoke = function(){
-  var joke_index = getJokeIndex()
-  var next_joke_index = parseInt(joke_index) + 1 
-  var analysis_type = Session.get('analysis_type')
-  var joke_indexes = Session.get('joke_indexes')
-  joke_indexes[analysis_type] = next_joke_index
-  Session.set('joke_indexes', joke_indexes)
-}  
+  if(Meteor.user()){
+    // increment the order
+    var currentSequenceIndex = parseInt(Meteor.user().profile.currentSequenceIndex)
+    var nextIndex = currentSequenceIndex + 1
+    // find out if the order is is the last order.
+    var lastSequenceIndex = parseInt(Meteor.user().profile.currentSequenceLastIndex)
+    
+    //if we are done with this sequence, mark that state
+    if(nextIndex > lastSequenceIndex){
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.currentAnalysisStatus": "completed" }}) 
+      //WHAT ELSE? DO I NEED TO PICK A NEW THING FOR THEM?      
+    }else {
+    
+      //UPDATE THE STATE
+      //updateNextIndex and JokeId
+      var sequenceId = Meteor.user().profile.currentSequenceId 
+      var nextJokeId = JokesInSequence.findOne({
+        sequence_id: sequenceId,
+        order: nextIndex
+      }).joke_id
+      
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{
+        "profile.currentSequenceIndex": nextIndex,
+        "profile.currentJokeId": nextJokeId
+      }}) 
+    } 
+  } else {
+    console.log("no user")
+  }
+}
+*/  
   
 goToNextJoke = function (skipReminder) {  
+  if( Meteor.user() ){
+    //use the state set by updateNextJoke to route us to the next location  
+    var sequenceId = Meteor.user().profile.currentSequenceId 
+    var sequenceIndex = Meteor.user().profile.currentSequenceIndex
+    var sequenceLastIndex = Meteor.user().profile.currentSequenceLastIndex
+    
+    var jokeId = Meteor.user().profile.currentJokeId   
+    var analysisType = Meteor.user().profile.currentAnalysisType 
+    var analysisStatus = Meteor.user().profile.currentAnalysisStatus 
+    var state = Meteor.user().profile.state 
+    
+    //default action - go to next joke in the sequence for this analysis type
+    if(analysisStatus == "completed"){
+      Router.go("/")
+      return
+    } 
+    console.log(analysisType)
+    
+    if(state == "waypoint"){
+      console.log("goto: waypoint")
+      Router.go("waypoint")
+      return
+    } 
+    
+    if(analysisType=="insult"){
+      var params = {
+        joke_id: jokeId
+      }
+      Router.go("insultAnalysisContainerWithJokeId", params)
+      return
+    }
+    
+    if(analysisType=="connectTheDots"){
+      var params = {
+        joke_id: jokeId
+      }
+      Router.go("connectTheDotsAnalysisContainerWithJokeId", params)
+      return
+    }
+    
+    
+    
+  }else{
+    console.log("no user")
+  }
+  /*
   var last_joke_index = 25
   var joke_index = getJokeIndex()
 
@@ -101,7 +182,7 @@ goToNextJoke = function (skipReminder) {
   }
 
   Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: joke_index})
-  
+  */
 }
 
 clearData = function (){  

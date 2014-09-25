@@ -67,20 +67,21 @@ function populateJokeSequences(){
   if (JokeSequences.find().count() === 0) { 
     joke_id_order = _.pluck(Jokes.find().fetch(), "_id")
     
-    var current_joke_sequence = []
-    var current_joke_sequence_index = 0
-    for(var i = 0; i< joke_id_order.length; i++){
-      var joke_id = joke_id_order[i]
-      current_joke_sequence.push(joke_id)
+    var numSequences = 3
+    for(var i = 0; i<numSequences; i++){
+      //create a new sequence
+      var name = "Random Beginning Sequence "+ i
+      var sequence_id = JokeSequences.insert({name: name})
       
-      if(current_joke_sequence.length == 20){
-        JokeSequences.insert({joke_ids: current_joke_sequence, index: current_joke_sequence_index})
-        current_joke_sequence_index++
-        current_joke_sequence = []        
-      }      
+      var new_joke_id_order = _.shuffle(joke_id_order)
+      _.each(new_joke_id_order, function(joke_id, order){
+        JokesInSequence.insert({sequence_id: sequence_id, joke_id: joke_id, order: order})
+      })
     }
   } 
 }
+
+
 
 Meteor.startup(function () {	
   //For each joke, insert a Joke and a corresponding JokeCount object.
@@ -88,7 +89,56 @@ Meteor.startup(function () {
   populateJokeSequences()
 })
 
-Meteor.methods({
+//right now, updateNextJoke is doing it's calculations RELAVTIVELy
+//it would be better to do them absolutely.
+//so if the user just did joke_id: abc, joke_index: 3, that would be given to
+//this function and it would just increment, rather than using the current stuff.
+//WOULD THAT MATTER?
+updateNextJoke = function(){
+  if(Meteor.user()){
+    // increment the order
+    var currentSequenceIndex = parseInt(Meteor.user().profile.currentSequenceIndex)
+    var nextIndex = currentSequenceIndex + 1
+    // find out if the order is is the last order.
+    var lastSequenceIndex = parseInt(Meteor.user().profile.currentSequenceLastIndex)
+    
+    //if we are done with this sequence, mark that state
+    if(nextIndex > lastSequenceIndex){
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.currentAnalysisStatus": "completed" }}) 
+      //WHAT ELSE? DO I NEED TO PICK A NEW THING FOR THEM?  
+      
+      return    
+    }
+    
+
+    //UPDATE THE STATE
+    //updateNextIndex and JokeId
+    var sequenceId = Meteor.user().profile.currentSequenceId 
+    var nextJokeId = JokesInSequence.findOne({
+      sequence_id: sequenceId,
+      order: nextIndex
+    }).joke_id
+    
+    Meteor.users.update({_id:Meteor.userId()}, {$set:{
+      "profile.currentSequenceIndex": nextIndex,
+      "profile.currentJokeId": nextJokeId
+    }}) 
+     
+     console.log((currentSequenceIndex-1)%10)
+   if( (currentSequenceIndex-1)%10 == 0){
+      //set the state for the waypoint
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{
+        "profile.state": "waypoint",
+        "profile.waypointParams": {}
+      }}) 
+    } 
+     
+  } else {
+    console.log("no user")
+  }
+}
+
+Meteor.methods({ 
   get_joke_sequence : function(){
     return joke_id_order
   },
@@ -97,7 +147,12 @@ Meteor.methods({
     var joke_id = joke_id_order[joke_index]
     return Jokes.findOne(joke_id).joke_text
   },
-   
+  submitWaypoint: function(){
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{
+        "profile.state": "analysis",
+        "profile.waypointParams": {}
+      }})     
+  }, 
   submitAnalysis : function(params){
     /*
     params = {
@@ -110,10 +165,7 @@ Meteor.methods({
       insultWho: insultWho,
       insultWhy: insultWhy,
       unclearWhy: unclearWhy,
-      
-      
-      
-      
+            
       dontGetIt: false,
       skip: false
       
@@ -129,21 +181,15 @@ Meteor.methods({
     var analysisParams = params
     analysisParams.time = getTime()
     analysisParams.user_id = Meteor.userId() || null
-    
-    var joke_index = parseInt(params.joke_index)
-    var joke_id = joke_id_order[joke_index]
-    if(joke_id === undefined){
-      joke_id = params.joke_id
-    }
-    analysisParams.joke_id = joke_id
+
+    console.log(params)
 
     insertAnalysis(analysisParams)    
     incrementJokeCounts(analysisParams)
+    updateNextJoke(analysisParams)
+
     
-    if (Meteor.user()){
-      var new_joke_index = (joke_index + 1)
-      Meteor.users.update({_id:Meteor.user()._id}, {$set:{"profile.joke_index": new_joke_index }})
-    } 
+    
   },
   likeComment: function(params){
     
@@ -372,6 +418,7 @@ function incrementJokeCounts(analysisParams){
   JokeCounts.update({joke_id: joke_id}, {$inc: fieldsToInc })  
 }
 
+/*
 createDefaultUnits = function(user){
   //if I create multiple units, then I will need to give them separate ids. 
   //I could create them on the fly.
@@ -407,23 +454,29 @@ createDefaultUnits = function(user){
   
   user.profile.currentUnitId = unit_id0
 }
-
+*/
 Accounts.onCreateUser(function(options, user) {
   // We're enforcing at least an empty profile object to avoid needing to check
   // for its existence later.
   user.profile = options.profile ? options.profile : {};
 
-  createDefaultUnits(user)
-  /*  
-  user.profile.mission = default_mission
-  user.profile.analysis_type = default_analysis_type
-
-  // Keep track of what joke_id the user is on for each vertical.
-  user.profile.joke_indexes = {}
-  _.each(analysis_types, function(analysis_type){
-    user.profile.joke_indexes[analysis_type] = 0
-  })
-  */
+  //createDefaultUnits(user)
+  //
+  user.profile.currentSequenceId = JokeSequences.findOne()._id
+  user.profile.currentSequenceIndex = 0
+  user.profile.currentSequenceLastIndex = 99
+  user.profile.state = "analysis"
+  user.profile.waypointParams = {}
+  
+  console.log(user.profile.currentSequenceId)
+  user.profile.currentJokeId = JokesInSequence.findOne({
+    sequence_id: user.profile.currentSequenceId, 
+    order: user.profile.currentSequenceIndex
+  }).joke_id
+  
+  user.profile.currentAnalysisType = "insult"
+  user.profile.currentAnalysisStatus = "notStarted"
+  
   return user;
 });
 

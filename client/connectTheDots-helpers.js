@@ -1,7 +1,7 @@
 submissionValidCTD = function(){
   //is there at least one radio button checked?
   var checkedElement = $('input:radio[name=connectTheDots]:checked');
-  console.log('here', checkedElement)
+  
   if (checkedElement.length == 0){
     alert('Please select Yes, No or Unclear (or select "I don\'t get it." / "Skip")')
     return false;
@@ -11,7 +11,6 @@ submissionValidCTD = function(){
     alert('Please say what information you need to infer.')
     return false;
   }
-  console.log('here')
   return true;
 }
 
@@ -35,7 +34,8 @@ submitJokeAnalysisCTD = function () {
   
   var f = Meteor.call('submitAnalysis', {
       ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
+      //joke_index: getJokeIndex(),
+      joke_id: Router.current().params.joke_id,
       connectTheDotsYN: connectTheDotsYNval,
       funnyYN: funnyYNval,
       
@@ -45,8 +45,8 @@ submitJokeAnalysisCTD = function () {
       skip: false,
       context: 'connectTheDots'
     }, function(result){
-      updateNextJokeCTD()
-      goToNextJokeCTD()
+      //updateNextJokeCTD()
+      goToNextJoke()
     } 
   )   
 }
@@ -54,13 +54,14 @@ submitJokeAnalysisCTD = function () {
 submitDontGetItCTD = function (){   
   Meteor.call('submitAnalysis', {
       ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
+      //joke_index: getJokeIndex(),
+      joke_id: Router.current().params.joke_id,
       dontGetIt: true,
       skip: false,
       context: 'connectTheDots'
     }, function(result){
-      updateNextJokeCTD()
-      goToNextJokeCTD()
+      //updateNextJokeCTD()
+      goToNextJoke()
     }    
   )  
 } 
@@ -68,17 +69,19 @@ submitDontGetItCTD = function (){
 submitSkipCTD = function (){   
   Meteor.call('submitAnalysis', {
       ip: Session.get('ip'),
-      joke_index: getJokeIndex(),
+      //joke_index: getJokeIndex(),
+      joke_id: Router.current().params.joke_id,
       dontGetIt: false,
       skip: true,
       context: 'connectTheDots'
     }, function(result){
-      updateNextJokeCTD()
-      goToNextJokeCTD()
+      //updateNextJokeCTD()
+      goToNextJoke()
     }    
   )  
 }
-  
+
+/*  
 updateNextJokeCTD = function(){
   var joke_index = getJokeIndex()
   var next_joke_index = parseInt(joke_index) + 1 
@@ -87,7 +90,8 @@ updateNextJokeCTD = function(){
   joke_indexes[analysis_type] = next_joke_index
   Session.set('joke_indexes', joke_indexes)
 }  
-  
+*/
+/*  
 goToNextJokeCTD = function (skipReminder) {  
   var last_joke_index = 25
   var joke_index = getJokeIndex()
@@ -105,6 +109,7 @@ goToNextJokeCTD = function (skipReminder) {
   Router.go('connectTheDotsAnalysisContainerWithJokeIndex',{joke_index: joke_index})
   
 }
+*/
 
 clearDataCTD = function (){  
   $('.freeTextDiv').each(function(){
