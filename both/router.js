@@ -155,14 +155,17 @@ Router.map(function(){
       yieldTemplates: {
         'header': {to: 'header'}
       },
+      loadingTemplate: "thanks",
       template: 'jokeAnalysis',
       data: function(){
+        if(this.ready()){
           //var joke_index = parseInt(this.params.joke_index)
           var joke_text = Jokes.findOne().joke_text
           var analysis = Analysis.find()
           var comments = Comments.find()
           var likes = Likes.find()
           return {joke_text: joke_text, analysis: analysis, comments: comments, likes: likes} 
+        }
       }
   }); 
 

@@ -1,3 +1,4 @@
+
 ////////////////////////////////
 ////////////////////////////////
 //       HELPERS
@@ -154,7 +155,7 @@ Template.connectTheDotsSummary.counts = function(){
   return JokeCounts.findOne()
 }
 
-Template.connectTheDotsSummary.myInsultData = function(){  
+Template.connectTheDotsSummary.myCTDData = function(){  
   var myData = myCTDData()
   //do I have a specific comment?
   
@@ -173,22 +174,22 @@ Template.connectTheDotsSummary.myInsultData = function(){
 
 
 Template.connectTheDotsSummary.summary = function(){
-  var insultYesExplain = Comments.find({type: "insultYes"}).fetch()
+  var connectTheDotsYesExplain = Comments.find({type: "connectTheDotsYes"}).fetch()
   
-  var insultUnclearExplain = [] //Analysis.find({insultYN: "unclear", insultWho: {$not: ""}}).fetch()
+  var connectTheDotsUnclearExplain = [] //Analysis.find({insultYN: "unclear", insultWho: {$not: ""}}).fetch()
   
   // if this user is logged in, 
   //go through all the jokes with non-zero likes
   // determine if THIS USER contributed any of the "likes", so we can flag it.
   if (Meteor.user()){   
-    _.each(insultYesExplain, function(comment){
+    _.each(connectTheDotsYesExplain, function(comment){
       findIfILikeThisComment(comment)
     })
     
   }
   return {
-    insultYesExplain: insultYesExplain, 
-    insultUnclearExplain: insultUnclearExplain
+    connectTheDotsYesExplain: connectTheDotsYesExplain, 
+    connectTheDotsUnclearExplain: connectTheDotsUnclearExplain
   }
 }
 
@@ -203,17 +204,17 @@ function myCTDData(){
       if (myCTD.connectTheDotsYN == "yes") {
         //find comments
         myCTD.yes = true
-        var analysis_id = myInsult._id
+        var analysis_id = myCTD._id
         var comment = Comments.findOne({analysis_id: analysis_id, type: "connectTheDotsYes"}) 
 
         if( comment ){
-          myCTD.connectWhat = comment.connectWhat
+          myCTD.connectWhat = comment.what
           myCTD.likeCount = comment.likeCount
           myCTD.i_like = false //I can't like my own comment
         }        
       }else if (myCTD.insultYN == "unclear"){
         myInsult.unclear = true
-        var analysis_id = myInsult._id
+        var analysis_id = myCTD._id
         var comment = Comments.findOne({analysis_id: analysis_id, type: "connectTheDotsUnclear"}) 
 
         if( comment ){

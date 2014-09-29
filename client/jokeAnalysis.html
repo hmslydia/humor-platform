@@ -1,3 +1,4 @@
+
 <template name="jokeAnalysis">
 
 <div class='container'>
@@ -66,12 +67,11 @@
   
   
   {{#if myInsultData.hasComment}}
-    <div class="myInsultAnswer">
+    <div class="myAnswer">
     My answer: {{myInsultData.insultYN}}<br>
     {{#if myInsultData.yesComment}}
       <div>
-        Who: <b>{{myInsultData.insultWho}}</b> {{myInsultData.insultWhy}}<br>
-        
+        Who: <b>{{myInsultData.insultWho}}</b> {{myInsultData.insultWhy}}<br>        
         {{#if myInsultData.i_like}}
           You and {{myInsultData.likeCount}} people like this
         {{else}}
@@ -121,9 +121,8 @@
   No: {{counts.connectTheDotsNos}} {{#if eq myCTDData.connectTheDotsYN "no"}}<b>(you)</b>{{/if}} <br>
   Unclear: {{counts.connectTheDotsUnclears}} {{#if eq myCTDData.connectTheDotsYN "unclear"}}<b>(you)</b>{{/if}} <br>
   
-  
   {{#if myCTDData.hasComment}}
-    <div class="myConnectTheDotsAnswer">
+    <div class="myAnswer">
     My answer: {{myCTDData.connectTheDotsYN}}<br>
     {{#if myCTDData.yesComment}}
       <div>
@@ -156,10 +155,10 @@
     </div>
   {{/if}}
   
-  {{#each summary.insultYesExplain}}
+  {{#each summary.connectTheDotsYesExplain}}
     <br>
     <b>{{this.who}}</b><br>
-    {{this.why}}<br>
+    {{this.what}}<br>
     {{#if this.i_like}}
       You and {{this.likeCount}} people like this
       {{else}}
