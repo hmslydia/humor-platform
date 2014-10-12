@@ -71,7 +71,16 @@ Router.map(function(){
     yieldTemplates: {
       'header': {to: 'header'}
     },
-    template: 'insultInstructions'
+    template: 'insultInstructions',
+    action: function(){
+      if(this.ready() && Meteor.user()){
+        this.render()
+      }
+    },
+    onAfterAction: function(){
+      //Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.currentAnalysisSeenInstructions": true }})
+    },
+    
   });
   
   

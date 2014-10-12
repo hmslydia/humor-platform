@@ -84,8 +84,8 @@ Thanks!
         </div>
         With human and machine intelligence, we're going to figure out once and for all what makes jokes funny. The future of humor is in your hands... help us analyze all the jokes on the web.<br>
         <br>
-        Example:
-        <br>
+        <div class="sectionLabel">Example:</div>
+        
         <br>
       </div>
       <div class="col-md-2"></div>
@@ -98,16 +98,66 @@ Thanks!
         <div id="insultExemplarText">
           If God had wanted us to be concerned for the plight of the toads, he would have made them cute and furry.
         </div>             
+        
+               <br>           
+        <div class="sectionLabel">
+          Road map:
+          
+        </div>
+        <br>
       </div>
       <div class="col-md-4">
         Does this joke contain an insult? <span class="answer_selected">Yes.</span><br>
         Who is it insulting? <span class="answer_selected">Toads.</span><br>
         Why is it insulting? <span class="answer_selected">It implies toads are ugly.</span>
+        
+       
+        <br>
       </div>      
       <div class="col-md-2"></div>
     </div>
     
-    
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">  
+
+        <table>
+        <tr>
+        <td>
+        <div class="blue1 tile" style="width: 150px">
+          Analyze 30 jokes.<br>
+          We'll teach you how
+          </div>
+        </td>
+        <td>
+          <span class="glyphicon glyphicon-arrow-right" style="padding: 10px"></span>
+        </td>
+        <td>
+          <div class="blue2 tile" style="width: 150px">
+          Review others' work (30 jokes).
+          </div>
+        </td>
+        <td>
+          <span class="glyphicon glyphicon-arrow-right" style="padding: 10px"></span>
+        </td>
+        <td><div class="blue3 tile" style="width: 180px">
+          See all the analysis.<br>
+          Resolve disagreements.
+          </div></td>
+        </tr>
+        </table>
+
+  
+        
+          
+        
+          
+        
+        
+      </div>     
+      <div class="col-md-2"></div>
+    </div>     
+       
     <div class="row">
       <div class="col-md-2"></div>
       <div class="col-md-8"> 
@@ -117,14 +167,20 @@ Thanks!
         <br>
         {{#if currentUser}}
           <div class='buttonContainer'>
+           {{> nextUp}}
+            <!--
             <br>
             Welcome back, {{displayName}}.<br>
-            <button id='resumeButton' class="btn btn-success btn-lg"><div>Resume analyzing! </div></button>
+            <button id='resumeButton' class="btn btn-success btn-lg"><div>Resume analyzing! </div></button>            
+            -->
             </div>      
         {{else}}
           <div class='buttonContainer'>
+            Login or create an account to begin.
+            <!--
             <button id="googleLoginButton" class="btn btn-success btn-lg"> Log in with Google </button> OR
             <button id='startButton' class="btn btn-primary"><div>Start analyzing now! </div></button>
+            -->
           </div>
         {{/if}}
       </div>

@@ -129,15 +129,23 @@ Template.welcome.events({
   'click #googleLoginButton': function() {
     Meteor.loginWithGoogle();
   },
+  /*
   'click #resumeButton': function() {
     startOrResume()
   },
+  */
   'click #startButton': function(){
     startOrResume()
   }
   
 })
-
+/*
+Template.nextUp.events({
+  'click #resumeButton': function() {
+    startOrResume()
+  }  
+})
+*/
 
 
 Template.header.events({

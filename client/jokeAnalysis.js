@@ -34,6 +34,29 @@ function findIfILikeThisComment(comment){
 Template.jokeAnalysis.counts = function(){
   return JokeCounts.findOne()
 }
+
+Template.jokeAnalysis.analysisTypeSummary = function(){
+  rtn = []  
+  var selectedTagId = Session.get('selectedTag')
+  
+  var selected = ""
+  if(selectedTagId && selectedTagId == "insultTag"){
+    selected = "selected"
+  }
+  rtn.push({name:"Insult", id:"insultTag", selected: selected})
+
+  var selected = ""
+  if(selectedTagId && selectedTagId == "connectTheDotsTag"){
+    selected = "selected"
+  }  
+  rtn.push({name:"Connect The Dots", id:"connectTheDotsTag", selected: selected})
+  
+  return rtn
+}
+
+Template.discussion.selectedTagId = function(){
+  return Session.get('selectedTag')
+}
 /*
 Template.myAnalyses.myViews = function(){
     return {contributed: true}
@@ -237,6 +260,10 @@ function myCTDData(){
 ///////////////////////////////////////
 
 Template.jokeAnalysis.events({
+  'click .analysisTypeTag': function(){
+    Session.set('selectedTag', this.id)
+  },
+
   'click .voteUp': function(){
     console.log(this)
     

@@ -1,34 +1,18 @@
 JokeSequences = new Meteor.Collection("joke_sequences")
 /*
 id:
-name: "Random Beginning Sequence 1"
+name: "A" (group name)
 */
 
 JokesInSequence = new Meteor.Collection("jokes_in_sequence") 
 /*
-joke_id:
-sequence_id:
-order:
-*/
-
-/*
-joke_ids: [a,b,c,] //array of joke_ids
-index: //used for default joke_sequence creation
-*/
-
-//Units = new Meteor.Collection("units")
-/*
-user_id: 
-type: "sequence" 
-status: notStarted/completed/inProgress
-
-//FIELDS FOR SEQUENCE TYPE
-joke_sequence_id: "asdf"
-joke_sequence_index: 10,
-analysis_type: "insult" // this also helps the router know where to go.
-totalNumJokes: 20 // this tells us how much progress there is.
-current_index: 0 //user dependent
-current_joke_id: 
+  sequence_id: sequence_id, 
+  group: group,
+  joke_id: joke_id, 
+  order: order,
+  first: first,
+  type: "connectTheDots",
+  round: 1
 */
 
 

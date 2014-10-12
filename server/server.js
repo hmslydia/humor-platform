@@ -1,23 +1,11 @@
 max_num_jokes = 100
 
-function getTime(){
+getTime = function(){
   return (new Date()).getTime()
 }
 
 
-var joke_count_categories = [
-"submits",
-"skips",
-"funnyYeses",
-"funnyNos",
-"funnyUnclears",
-"insultYeses",
-"insultNos",
-"insultUnclears",
-"connectTheDotsYeses",
-"connectTheDotsNos",
-"connectTheDotsUnclears"
-]
+
 /*
 var joke_count_blank = {
   joke_id : "",
@@ -40,54 +28,7 @@ var joke_count_blank = {
 }
 */
 
-function populateJokes(){
-  //For each joke, insert a Joke and a corresponding JokeCount object.
-  if (Jokes.find().count() === 0) {
-    for (var i = 0; i < max_num_jokes; i++) {
-			var thisItem = jokes[i]
-      var task_id = Jokes.insert(thisItem);
-      
-      
-      var joke_counts = createBlankJokeCounts()
-      joke_counts['joke_id'] = task_id
-      JokeCounts.insert(joke_counts);
 
-    }
-  }  
-}
-function createBlankJokeCounts() {
-  var obj = {joke_id: ""}
-  _.each(joke_count_categories, function(category){
-    obj[category] = 0
-  })
-  return obj
-}
-
-function populateJokeSequences(){
-  if (JokeSequences.find().count() === 0) { 
-    joke_id_order = _.pluck(Jokes.find().fetch(), "_id")
-    
-    var numSequences = 3
-    for(var i = 0; i<numSequences; i++){
-      //create a new sequence
-      var name = "Random Beginning Sequence "+ i
-      var sequence_id = JokeSequences.insert({name: name})
-      
-      var new_joke_id_order = _.shuffle(joke_id_order)
-      _.each(new_joke_id_order, function(joke_id, order){
-        JokesInSequence.insert({sequence_id: sequence_id, joke_id: joke_id, order: order})
-      })
-    }
-  } 
-}
-
-
-
-Meteor.startup(function () {	
-  //For each joke, insert a Joke and a corresponding JokeCount object.
-  populateJokes()
-  populateJokeSequences()
-})
 
 //right now, updateNextJoke is doing it's calculations RELAVTIVELy
 //it would be better to do them absolutely.
@@ -96,6 +37,59 @@ Meteor.startup(function () {
 //WOULD THAT MATTER?
 updateNextJoke = function(){
   if(Meteor.user()){
+    var sequenceId = Meteor.user().profile.currentSequenceId //no change
+    var sequenceIndex = Meteor.user().profile.currentSequenceIndex //CHANGE*****
+    var sequenceLastIndex = Meteor.user().profile.currentSequenceLastIndex //no change
+    
+    var jokeId = Meteor.user().profile.currentJokeId //CHANGE *** 
+    var analysisType = Meteor.user().profile.currentAnalysisType //could CHANGE, if first
+    var analysisStatus = Meteor.user().profile.currentAnalysisStatus //could CHANGE, if first
+    var analysisSeenInstructions = Meteor.user().profile.currentAnalysisSeenInstructions // could CHANGE, if first
+    var state = Meteor.user().profile.state //could CHANGE
+    var group = Meteor.user().profile.group //no change 
+    
+    var nextSequenceIndex = sequenceIndex + 1
+    
+    //find the next jokeId
+    /*
+
+    sequence_id: sequence_id,   
+    group: group,               
+    joke_id: joke_id,            
+    sequence_index: order,    //SHOULD BE CALLED 'SEQUENCE_INDEX'           
+    first: first,               
+    type: "insult",                         
+    state: 1    //SHOULD BE CALLED 'STATE'                
+            
+    */
+    var nextUp = JokesInSequence.findOne({group: group, sequence_index: nextSequenceIndex})
+    
+    //Now figure out how to update the state
+    
+    //what's different between the state where I am and the state where I need to be.
+    //update the currentSequenceIndex
+    var nextFirst = nextUp.first
+    var nextJokeId = nextUp.joke_id
+    
+    if(nextFirst){
+      //we have to propigate a change of state
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{
+        "profile.sequenceIndex": nextSequenceIndex, 
+        "profile.currentJokeId": nextJokeId,      
+      
+        'profile.currentAnalysisType': nextUp.type,
+        'profile.currentAnalysisStatus': "notStarted", 
+        'profile.currentAnalysisSeenInstructions': false,
+        'profile.state': nextUp.state 
+      }})      
+    } else {    
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{
+        "profile.sequenceIndex": nextSequenceIndex, 
+        "profile.currentJokeId": nextJokeId,   
+        'profile.currentAnalysisStatus': "inProgress"    
+      }}) 
+    }
+  /*
     // increment the order
     var currentSequenceIndex = parseInt(Meteor.user().profile.currentSequenceIndex)
     var nextIndex = currentSequenceIndex + 1
@@ -120,11 +114,12 @@ updateNextJoke = function(){
     }).joke_id
     
     Meteor.users.update({_id:Meteor.userId()}, {$set:{
+      "profile.currentAnalysisStatus": "inProgress",
       "profile.currentSequenceIndex": nextIndex,
       "profile.currentJokeId": nextJokeId
     }}) 
      
-     console.log((currentSequenceIndex-1)%10)
+     //console.log((currentSequenceIndex-1)%10)
    if( (currentSequenceIndex-1)%10 == 0){
       //set the state for the waypoint
       Meteor.users.update({_id:Meteor.userId()}, {$set:{
@@ -132,7 +127,7 @@ updateNextJoke = function(){
         "profile.waypointParams": {}
       }}) 
     } 
-     
+     */
   } else {
     console.log("no user")
   }
@@ -418,65 +413,6 @@ function incrementJokeCounts(analysisParams){
   JokeCounts.update({joke_id: joke_id}, {$inc: fieldsToInc })  
 }
 
-/*
-createDefaultUnits = function(user){
-  //if I create multiple units, then I will need to give them separate ids. 
-  //I could create them on the fly.
-  //Or I could create them with random ids (that they haven't done?
-  
-  var jokeSequence0 = JokeSequences.findOne({index:0})
-  var first_joke_id0 = jokeSequence0.joke_ids[0]
-  var unit_id0 = Units.insert({
-    user_id: user._id,
-    type: "sequence",
-    status: "notStarted",
-    joke_sequence_id: jokeSequence0._id,
-    joke_sequence_index: 0,
-    analysis_type: "insult",
-    totalNumJokes: jokeSequence0.joke_ids.length,
-    current_index: 0,
-    current_joke_id: first_joke_id0     
-  })
-  
-  var jokeSequence1 = JokeSequences.findOne({index:1})
-  var first_joke_id1 = jokeSequence1.joke_ids[0]
-  var unit_id1 = Units.insert({
-    user_id: user._id,
-    type: "sequence",
-    status: "notStarted",
-    joke_sequence_id: jokeSequence1._id,
-    joke_sequence_index: 0,
-    analysis_type: "connectTheDots",
-    totalNumJokes: jokeSequence1.joke_ids.length,
-    current_index: 0 ,
-    current_joke_id: first_joke_id1   
-  })
-  
-  user.profile.currentUnitId = unit_id0
-}
-*/
-Accounts.onCreateUser(function(options, user) {
-  // We're enforcing at least an empty profile object to avoid needing to check
-  // for its existence later.
-  user.profile = options.profile ? options.profile : {};
 
-  //createDefaultUnits(user)
-  //
-  user.profile.currentSequenceId = JokeSequences.findOne()._id
-  user.profile.currentSequenceIndex = 0
-  user.profile.currentSequenceLastIndex = 99
-  user.profile.state = "analysis"
-  user.profile.waypointParams = {}
-  
-  console.log(user.profile.currentSequenceId)
-  user.profile.currentJokeId = JokesInSequence.findOne({
-    sequence_id: user.profile.currentSequenceId, 
-    order: user.profile.currentSequenceIndex
-  }).joke_id
-  
-  user.profile.currentAnalysisType = "insult"
-  user.profile.currentAnalysisStatus = "notStarted"
-  
-  return user;
-});
+
 

@@ -9,6 +9,30 @@
   padding-bottom: 15px;
 }
 
+.sectionLabel{
+  font-weight: bold;
+}
+
+.blue1{
+  background-color: #ADADFF;
+}
+
+.blue2{
+  background-color: #8585FF;
+}
+
+.blue3{
+  background-color: #5C5CFF;
+}
+
+.tile{
+  /*display:inline;*/
+  width: 200px;
+  border-radius: 15px;
+  padding: 10px;
+}
+
+
 .freeText{
   width: 300px;
 }

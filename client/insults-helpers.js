@@ -121,69 +121,6 @@ updateNextJoke = function(){
 }
 */  
   
-goToNextJoke = function (skipReminder) {  
-  if( Meteor.user() ){
-    //use the state set by updateNextJoke to route us to the next location  
-    var sequenceId = Meteor.user().profile.currentSequenceId 
-    var sequenceIndex = Meteor.user().profile.currentSequenceIndex
-    var sequenceLastIndex = Meteor.user().profile.currentSequenceLastIndex
-    
-    var jokeId = Meteor.user().profile.currentJokeId   
-    var analysisType = Meteor.user().profile.currentAnalysisType 
-    var analysisStatus = Meteor.user().profile.currentAnalysisStatus 
-    var state = Meteor.user().profile.state 
-    
-    //default action - go to next joke in the sequence for this analysis type
-    if(analysisStatus == "completed"){
-      Router.go("/")
-      return
-    } 
-    console.log(analysisType)
-    
-    if(state == "waypoint"){
-      console.log("goto: waypoint")
-      Router.go("waypoint")
-      return
-    } 
-    
-    if(analysisType=="insult"){
-      var params = {
-        joke_id: jokeId
-      }
-      Router.go("insultAnalysisContainerWithJokeId", params)
-      return
-    }
-    
-    if(analysisType=="connectTheDots"){
-      var params = {
-        joke_id: jokeId
-      }
-      Router.go("connectTheDotsAnalysisContainerWithJokeId", params)
-      return
-    }
-    
-    
-    
-  }else{
-    console.log("no user")
-  }
-  /*
-  var last_joke_index = 25
-  var joke_index = getJokeIndex()
-
-  if (!skipReminder && !Meteor.userId() && (joke_index % 6 == 0)){
-    Router.go('loginReminder')
-    return 
-  }
-  
-  if (!skipReminder && (joke_index % 10 == 0)){
-    Router.go('mini-menu')
-    return 
-  }
-
-  Router.go('insultAnalysisContainerWithJokeIndex',{joke_index: joke_index})
-  */
-}
 
 clearData = function (){  
   $('.freeTextDiv').each(function(){
