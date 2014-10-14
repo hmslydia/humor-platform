@@ -77,11 +77,44 @@ Router.map(function(){
         this.render()
       }
     },
-    onAfterAction: function(){
-      //Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.currentAnalysisSeenInstructions": true }})
-    },
     
   });
+  
+  this.route('insultPeerReviewContainerWithJokeId',{
+    path: '/insultPeerReview/:joke_id', 
+    
+    waitOn: function(){ 
+      var joke_id = this.params.joke_id
+      return [Meteor.subscribe('jokesById', joke_id), Meteor.subscribe('analysisByJoke', joke_id),Meteor.subscribe('commentsByJoke', joke_id),] // MUST ALSO SUBSCRIBE TO THE PEER INPUT       
+    },
+    
+    layoutTemplate: 'standardLayout',
+    yieldTemplates: {
+      'header': {to: 'header'}
+    },
+    
+    template: 'insultPeerReviewContainer',
+    loadingTemplate: "thanks",
+    data: function(){  
+      if(this.ready()){
+        //console.log(Jokes.findOne()) 
+        var joke_text = Jokes.findOne().joke_text //we are only subscribed to the right joke
+        //console.log(Meteor.user())
+        var joke_index = Meteor.user().profile.currentSequenceIndex
+        var numTotal = (Math.floor(joke_index / 10) + 1 ) * 10     
+        var analysis = Analysis.find({type: "insultYN"}).fetch()
+        var comments = Comments.find({context: "insult"}).fetch()  
+        //console.log(analysis.fetch() )
+        //console.log(comments.fetch() )
+        return {joke_text: joke_text, numCompleted: (joke_index + 1), numTotal: numTotal, analysis:analysis, comments: comments} 
+      }
+    },
+    action: function(){
+      if(this.ready() && Meteor.user()){
+        this.render()
+      }
+    },
+  }); 
   
   
   /////////////////////////////////
@@ -173,9 +206,15 @@ Router.map(function(){
           var analysis = Analysis.find()
           var comments = Comments.find()
           var likes = Likes.find()
+          //console.log({joke_text: joke_text.fet, analysis: analysis, comments: comments, likes: likes} )
           return {joke_text: joke_text, analysis: analysis, comments: comments, likes: likes} 
         }
+      },    
+      action: function(){
+      if(this.ready() && Meteor.user()){
+        this.render()
       }
+    },
   }); 
 
 

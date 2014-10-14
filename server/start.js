@@ -5,7 +5,7 @@ function getGroup(){
   //Find out how many users there are and assign this next user to 
   
   var numUsers = Meteor.users._collection.find().count()
-  var mod3 = numUsers % 3
+  var mod3 = numUsers % 2 //3
   if(mod3 == 0){
     return "A"
   }
@@ -39,6 +39,8 @@ Accounts.onCreateUser(function(options, user) {
   user.profile.currentAnalysisSeenInstructions = false // || true
   
   user.profile.group = getGroup() // "A" || "B" || "C"
+  
+  user.profile.pageType = "home" //WHAT SHOULD THE DEFAULT BE "instructions", "task", "waypoint"
   
   
   return user;
@@ -83,7 +85,6 @@ populateJokes = function (){
     }
   }  
 }
-
 
 populateJokeSequences = function (){
   if (JokeSequences.find().count() === 0) { 
@@ -154,6 +155,7 @@ populateJokeSequences = function (){
             state: "analysis"
             })
         })
+        /*
          _.each(joke_id_set3, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*2
@@ -167,12 +169,12 @@ populateJokeSequences = function (){
             state: "analysis"
             })
         }) 
-        
+        */
         
         //ROUND 2
         _.each(joke_id_set2, function(joke_id, order){
           var first = (order == 0)
-          var order = order + offset*3
+          var order = order + offset*2 //3
           JokesInSequence.insert({
             sequence_id: sequence_id, 
             group: group,
@@ -185,7 +187,7 @@ populateJokeSequences = function (){
         })
         _.each(joke_id_set3, function(joke_id, order){
           var first = (order == 0)
-          var order = order + offset*4
+          var order = order + offset*3 //4
           JokesInSequence.insert({
             sequence_id: sequence_id, 
             group: group,
@@ -196,6 +198,7 @@ populateJokeSequences = function (){
             state: "peer review"
             })
         })
+        /*
          _.each(joke_id_set1, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*5
@@ -208,7 +211,8 @@ populateJokeSequences = function (){
             type: "expectationViolation",
             state: "peer review"
             })
-        })       
+        })  
+        */     
       }
       if(i == 1){
         var group = "B"
@@ -239,6 +243,7 @@ populateJokeSequences = function (){
             state: "analysis"
             })
         })
+        /*
          _.each(joke_id_set1, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*2
@@ -252,11 +257,12 @@ populateJokeSequences = function (){
             state: "analysis"
             })
         })
+        */
         
-                //ROUND 2
+        //ROUND 2
         _.each(joke_id_set3, function(joke_id, order){
           var first = (order == 0)
-          var order = order + offset*3
+          var order = order + offset*2//3
           JokesInSequence.insert({
             sequence_id: sequence_id, 
             group: group,
@@ -269,7 +275,7 @@ populateJokeSequences = function (){
         })
         _.each(joke_id_set1, function(joke_id, order){
           var first = (order == 0)
-          var order = order + offset*4
+          var order = order + offset*3//4
           JokesInSequence.insert({
             sequence_id: sequence_id, 
             group: group,
@@ -280,6 +286,7 @@ populateJokeSequences = function (){
             state: "peer review"
             })
         })
+        /*
          _.each(joke_id_set2, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*5
@@ -293,6 +300,7 @@ populateJokeSequences = function (){
             state: "peer review"
             })
         }) 
+        */
       }
       if(i == 2){
         var group = "C"
@@ -322,6 +330,7 @@ populateJokeSequences = function (){
             state: "analysis"
             })
         })
+        /*
          _.each(joke_id_set2, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*2
@@ -335,12 +344,12 @@ populateJokeSequences = function (){
             state: "analysis"
             })
         })
-        
+        */
         
                 //ROUND 2
         _.each(joke_id_set1, function(joke_id, order){
           var first = (order == 0)
-          var order = order + offset*3
+          var order = order + offset*2//3
           JokesInSequence.insert({
             sequence_id: sequence_id, 
             group: group,
@@ -353,7 +362,7 @@ populateJokeSequences = function (){
         })
         _.each(joke_id_set2, function(joke_id, order){
           var first = (order == 0)
-          var order = order + offset*4
+          var order = order + offset*3//4
           
           JokesInSequence.insert({
             sequence_id: sequence_id, 
@@ -365,6 +374,7 @@ populateJokeSequences = function (){
             state: "peer review"
             })
         })
+        /*
          _.each(joke_id_set3, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*5
@@ -378,6 +388,7 @@ populateJokeSequences = function (){
             state: "peer review"
             })
         }) 
+        */
       }
     }
   } 

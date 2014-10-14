@@ -62,72 +62,50 @@ updateNextJoke = function(){
     state: 1    //SHOULD BE CALLED 'STATE'                
             
     */
-    var nextUp = JokesInSequence.findOne({group: group, sequence_index: nextSequenceIndex})
     
+    var nextUp = JokesInSequence.findOne({group: group, sequence_index: nextSequenceIndex})
     //Now figure out how to update the state
     
     //what's different between the state where I am and the state where I need to be.
     //update the currentSequenceIndex
     var nextFirst = nextUp.first
     var nextJokeId = nextUp.joke_id
+    var nextState = nextUp.state
+    //console.log(nextUp)
     
+    //STATE CHANGE
     if(nextFirst){
       //we have to propigate a change of state
+      //if(nextState == "analysis"){
+        Meteor.users.update({_id:Meteor.userId()}, {$set:{
+          "profile.currentSequenceIndex": nextSequenceIndex, 
+          "profile.currentJokeId": nextJokeId,      
+        
+          'profile.currentAnalysisType': nextUp.type,
+          'profile.currentAnalysisStatus': "notStarted", 
+          'profile.currentAnalysisSeenInstructions': false,
+          'profile.state': nextUp.state,
+          
+          "profile.pageType": 'waypoint', 
+          
+          //POPULATE WAYPOINT PARAMETERS IF I WANT TO DISPLAY ANY STATISTICS, punt for now.
+        }}) 
+        /*
+      }else if (nextState == "peer review"){
+        //CHECK IF WE HAVE MET THE PRECONDITIONS FOR THIS NEW STATE
+        //ACTUALLY, PUNT ON THAT.
+      }   
+      */  
+    } 
+    //BORING - JUST ANOTHER DATA, NO CHANGE OF STATE
+    else {    
       Meteor.users.update({_id:Meteor.userId()}, {$set:{
-        "profile.sequenceIndex": nextSequenceIndex, 
-        "profile.currentJokeId": nextJokeId,      
-      
-        'profile.currentAnalysisType': nextUp.type,
-        'profile.currentAnalysisStatus': "notStarted", 
-        'profile.currentAnalysisSeenInstructions': false,
-        'profile.state': nextUp.state 
-      }})      
-    } else {    
-      Meteor.users.update({_id:Meteor.userId()}, {$set:{
-        "profile.sequenceIndex": nextSequenceIndex, 
+        "profile.currentSequenceIndex": nextSequenceIndex, 
         "profile.currentJokeId": nextJokeId,   
         'profile.currentAnalysisStatus': "inProgress"    
       }}) 
     }
-  /*
-    // increment the order
-    var currentSequenceIndex = parseInt(Meteor.user().profile.currentSequenceIndex)
-    var nextIndex = currentSequenceIndex + 1
-    // find out if the order is is the last order.
-    var lastSequenceIndex = parseInt(Meteor.user().profile.currentSequenceLastIndex)
-    
-    //if we are done with this sequence, mark that state
-    if(nextIndex > lastSequenceIndex){
-      Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.currentAnalysisStatus": "completed" }}) 
-      //WHAT ELSE? DO I NEED TO PICK A NEW THING FOR THEM?  
-      
-      return    
-    }
-    
-
-    //UPDATE THE STATE
-    //updateNextIndex and JokeId
-    var sequenceId = Meteor.user().profile.currentSequenceId 
-    var nextJokeId = JokesInSequence.findOne({
-      sequence_id: sequenceId,
-      order: nextIndex
-    }).joke_id
-    
-    Meteor.users.update({_id:Meteor.userId()}, {$set:{
-      "profile.currentAnalysisStatus": "inProgress",
-      "profile.currentSequenceIndex": nextIndex,
-      "profile.currentJokeId": nextJokeId
-    }}) 
-     
-     //console.log((currentSequenceIndex-1)%10)
-   if( (currentSequenceIndex-1)%10 == 0){
-      //set the state for the waypoint
-      Meteor.users.update({_id:Meteor.userId()}, {$set:{
-        "profile.state": "waypoint",
-        "profile.waypointParams": {}
-      }}) 
-    } 
-     */
+  
   } else {
     console.log("no user")
   }
@@ -195,19 +173,75 @@ Meteor.methods({
     //increment likes
     var comment_id = params.comment_id
     Comments.update(comment_id, {$inc: {likeCount: 1} })  
-  } 
+  },
   
+  submitPeerAnalysis: function(params){
+
+    //INSERT SOMETHING INTO THE DATABASE. OR NOTHING, I DONT CARE
+    var analysisParams = params
+    analysisParams.time = getTime()
+    analysisParams.user_id = Meteor.userId() || null
+    
+    insertViewAnalysis(analysisParams)
+    insertInsultPeerAnalysis(analysisParams)
+    
+    //this won't update the selected analysis ids, just the skips
+    incrementJokeCounts(analysisParams)
+    
+    //FOR EACH SELECTED ANALYSIS ID INCREMENT JOKE COUNTS and LIKE COMMENTS
+    var selectedAnalysisIds = params.selected_analysis_ids
+    _.each(selectedAnalysisIds, function(analysis_id){
+      //INCREMENT JOKE COUNTS
+      if(analysis_id != "none"){
+        var analysis = Analysis.findOne(analysis_id)
+        var type = analysis.type
+        var joke_id = analysis.joke_id
+        
+        if(type == "insultYN"){
+          var answer = analysis.insultYN
+          
+          var fieldsToInc = {}
+          if (answer == "yes"){
+            fieldsToInc['insultYeses'] = 1
+          }
+          if (answer == "no"){
+            fieldsToInc['insultNos'] = 1
+          }
+          if (answer == "unclear"){
+            fieldsToInc['insultUnclears'] = 1
+          }
+          JokeCounts.update({joke_id: joke_id}, {$inc: fieldsToInc })  
+        }
+        if(type == "connectTheDotsYN"){
+          var answer = analysis.insultYN
+          
+          var fieldsToInc = {}
+          if (answer == "yes"){
+            fieldsToInc['connectTheDotsYeses'] = 1
+          }
+          if (answer == "no"){
+            fieldsToInc['connectTheDotsNos'] = 1
+          }
+          if (answer == "unclear"){
+            fieldsToInc['connectTheDotsUnclears'] = 1
+          }
+          JokeCounts.update({joke_id: joke_id}, {$inc: fieldsToInc })  
+        } 
+        
+        
+        //LIKE COMMENTS.
+        
+        var associatedComment = Comments.findOne({analysis_id: analysis_id})
+        if (associatedComment){
+          //INCREMENT LIKES
+          var comment_id = associatedComment._id
+          Comments.update(comment_id, {$inc: {likeCount: 1} }) 
+        } 
+      }   
+    })
+  }
 })
 
-/*
-    Meteor.call('likeComment', {
-      ip: Session.get('ip'),
-      joke_id: this.joke_id,
-      analysis_id: this.analysis_id,
-      comment_id: this._id, 
-      context: 'joke'
-    })
-*/
 
 function insertAnalysis(analysisParams){
   //insert multiple analyses, one for each type of analysis that is entered
@@ -253,7 +287,7 @@ function insertFunnyAnalysis(analysisParams){
   if(analysisParams.hasOwnProperty('funnyYN')){
     var keysToInclude = ['user_id', 'joke_id', 'ip', 'time', 'context', 'funnyYN']  
     var funnyAnalysisParams = createSubsetDict(keysToInclude, analysisParams)
-    funnyAnalysisParams.type = "funny"  
+    funnyAnalysisParams.type = "funnyYN"  
       
     var analysis_id = Analysis.insert(funnyAnalysisParams)  
   }
@@ -274,7 +308,7 @@ function insertInsultAnalysis(analysisParams){
   if(analysisParams.hasOwnProperty('insultYN')){
     var keysToInclude = ['user_id', 'joke_id', 'ip', 'time', 'context', 'insultYN']  
     var insultAnalysisParams = createSubsetDict(keysToInclude, analysisParams)
-    insultAnalysisParams.type = "insult"  
+    insultAnalysisParams.type = "insultYN"  
       
     var analysis_id = Analysis.insert(insultAnalysisParams)  
     
@@ -311,7 +345,7 @@ function insertConnectTheDotsAnalysis(analysisParams){
   if(analysisParams.hasOwnProperty('connectTheDotsYN')){
     var keysToInclude = ['user_id', 'joke_id', 'ip', 'time', 'context', 'connectTheDotsYN']  
     var connectTheDotsAnalysisParams = createSubsetDict(keysToInclude, analysisParams)
-    connectTheDotsAnalysisParams.type = "connect_the_dots"  
+    connectTheDotsAnalysisParams.type = "connectTheDotsYN"  
       
     var analysis_id = Analysis.insert(connectTheDotsAnalysisParams)  
     
@@ -341,6 +375,18 @@ function insertConnectTheDotsAnalysis(analysisParams){
     }
     
   }  
+}
+
+
+function insertInsultPeerAnalysis(analysisParams){
+  if(analysisParams.hasOwnProperty('selected_analysis_ids')){
+    var keysToInclude = ['user_id', 'joke_id', 'ip', 'time', 'context', 'selected_analysis_ids']  
+    var insultPeerAnalysisParams = createSubsetDict(keysToInclude, analysisParams)
+    insultPeerAnalysisParams.type = "insultPeer"  
+      
+    var analysis_id = Analysis.insert(insultPeerAnalysisParams)  
+  }
+    
 }
 
 createSubsetDict = function (keys, oldDict){

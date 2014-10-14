@@ -160,6 +160,7 @@ function myInsultData(){
           myInsult.i_like = false //I can't like my own comment
         } 
       }
+      console.log(myInsult)
       return myInsult
     } else {
       return {contributed: false}

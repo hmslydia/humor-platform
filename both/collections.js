@@ -51,7 +51,7 @@ There are two main types - views (when a user has simply seen a joke), and parti
 
 Enter comments in "comment" collection.
 
-joke type: view
+***joke type: view***
   ip: Session.get('ip'),
   joke_id: 
   user_id: me
@@ -62,16 +62,28 @@ joke type: view
   dontGetIt: false
   context_analysis_type: insultYN
 
-Joke types: insultYN/ funnyYN/ connectTheDots
+***Joke types: insultYN/ funnyYN/ connectTheDots***
   ip: Session.get('ip'),
   joke_id:
   user_id: me
   time: 12:00
-  type: insultYN/funnyYN/connectYN/exaggerationYN
+  type: insultYN/funnyYN/connectTheDotsYN/exaggerationYN
   
   answer: "yes"/"no"/"unclear"
   time: 12:00
   context: insult
+  
+  
+***Joke types: insultPeer/ funnyPeer/ connectTheDotsPeer***
+  ip: Session.get('ip'),
+  joke_id:
+  user_id: me
+  time: 12:00
+  type: insultPeer/ funnyPeer/ connectTheDotsPeer
+  
+  selectedAnalysisIds: []
+  time: 12:00
+  context: insult  
 */
 
 Comments = new Meteor.Collection("comments")
