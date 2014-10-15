@@ -61,14 +61,20 @@
       </div>
       -->
       <div class="row">
-        <div class="col-md-3">
-          {{#each analysisTypeSummary}}
-            {{> analysisTypeTag}}
-          
-          {{/each}}
+        <div class="col-md-12">      
+          <div class="bs-example">
+          	<ul class="nav nav-pills">
+	            {{#each analysisTypeSummary}}
+	              <li class="{{selected}}"><a href="#" class="analysisTypeTab" id="{{id}}" >{{name}}</a></li>
+              {{/each}}
+          	</ul>
+          </div>
         </div>
-        
-        <div class="col-md-9">  
+      </div>
+      
+      
+      <div class="row">
+        <div class="col-md-12">  
           {{> discussion}}
         </div>  
       </div>
@@ -97,12 +103,6 @@
 <template name="analysisTypeTag">
   <div id="{{id}}" class="analysisTypeTag {{selected}}">
     <h3>{{name}}</h3>
-    
-    <!--
-    Yes: {{counts.insultYeses}} {{#if eq myInsultData.insultYN "yes"}}<b>(you)</b>{{/if}} <br>
-    No: {{counts.insultNos}} {{#if eq myInsultData.insultYN "no"}}<b>(you)</b>{{/if}} <br>
-    Unclear: {{counts.insultUnclears}} {{#if eq myInsultData.insultYN "unclear"}}<b>(you)</b>{{/if}} <br>
-    --> 
   </div>  
 </template>
 

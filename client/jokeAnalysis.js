@@ -41,13 +41,13 @@ Template.jokeAnalysis.analysisTypeSummary = function(){
   
   var selected = ""
   if(selectedTagId && selectedTagId == "insultTag"){
-    selected = "selected"
+    selected = "active"
   }
   rtn.push({name:"Insult", id:"insultTag", selected: selected})
 
   var selected = ""
   if(selectedTagId && selectedTagId == "connectTheDotsTag"){
-    selected = "selected"
+    selected = "active"
   }  
   rtn.push({name:"Connect The Dots", id:"connectTheDotsTag", selected: selected})
   
@@ -261,7 +261,12 @@ function myCTDData(){
 ///////////////////////////////////////
 
 Template.jokeAnalysis.events({
+  /*
   'click .analysisTypeTag': function(){
+    Session.set('selectedTag', this.id)
+  },
+  */
+  'click .analysisTypeTab': function(){
     Session.set('selectedTag', this.id)
   },
 
