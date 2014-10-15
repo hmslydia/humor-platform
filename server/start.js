@@ -95,7 +95,7 @@ populateJokeSequences = function (){
     joke_id_order = _.pluck(Jokes.find().fetch(), "_id")
     
     var numSequences = 3
-    var offset = 2
+    var offset = 5
     var joke_id_set1 = joke_id_order.slice(0,offset)
     var joke_id_set2 = joke_id_order.slice(offset,offset*2)
     var joke_id_set3 = joke_id_order.slice(offset*2, offset*3)

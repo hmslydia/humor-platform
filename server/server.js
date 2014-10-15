@@ -1,4 +1,4 @@
-max_num_jokes = 8
+max_num_jokes = 20
 
 getTime = function(){
   return (new Date()).getTime()
