@@ -1,4 +1,4 @@
-max_num_jokes = 100
+max_num_jokes = 8
 
 getTime = function(){
   return (new Date()).getTime()
@@ -68,44 +68,47 @@ updateNextJoke = function(){
     
     //what's different between the state where I am and the state where I need to be.
     //update the currentSequenceIndex
-    var nextFirst = nextUp.first
-    var nextJokeId = nextUp.joke_id
-    var nextState = nextUp.state
-    //console.log(nextUp)
     
-    //STATE CHANGE
-    if(nextFirst){
-      //we have to propigate a change of state
-      //if(nextState == "analysis"){
+    if(nextUp === undefined){
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{ "profile.pageType": "home"}})       
+    } else {
+      var nextFirst = nextUp.first
+      var nextJokeId = nextUp.joke_id
+      var nextState = nextUp.state
+      
+      //STATE CHANGE
+      if(nextFirst){
+        //we have to propigate a change of state
+        //if(nextState == "analysis"){
+          Meteor.users.update({_id:Meteor.userId()}, {$set:{
+            "profile.currentSequenceIndex": nextSequenceIndex, 
+            "profile.currentJokeId": nextJokeId,      
+          
+            'profile.currentAnalysisType': nextUp.type,
+            'profile.currentAnalysisStatus': "notStarted", 
+            'profile.currentAnalysisSeenInstructions': false,
+            'profile.state': nextUp.state,
+            
+            "profile.pageType": 'waypoint', 
+            
+            //POPULATE WAYPOINT PARAMETERS IF I WANT TO DISPLAY ANY STATISTICS, punt for now.
+          }}) 
+          /*
+        }else if (nextState == "peer review"){
+          //CHECK IF WE HAVE MET THE PRECONDITIONS FOR THIS NEW STATE
+          //ACTUALLY, PUNT ON THAT.
+        }   
+        */  
+      } 
+      //BORING - JUST ANOTHER DATA, NO CHANGE OF STATE
+      else {    
         Meteor.users.update({_id:Meteor.userId()}, {$set:{
           "profile.currentSequenceIndex": nextSequenceIndex, 
-          "profile.currentJokeId": nextJokeId,      
-        
-          'profile.currentAnalysisType': nextUp.type,
-          'profile.currentAnalysisStatus': "notStarted", 
-          'profile.currentAnalysisSeenInstructions': false,
-          'profile.state': nextUp.state,
-          
-          "profile.pageType": 'waypoint', 
-          
-          //POPULATE WAYPOINT PARAMETERS IF I WANT TO DISPLAY ANY STATISTICS, punt for now.
+          "profile.currentJokeId": nextJokeId,   
+          'profile.currentAnalysisStatus': "inProgress"    
         }}) 
-        /*
-      }else if (nextState == "peer review"){
-        //CHECK IF WE HAVE MET THE PRECONDITIONS FOR THIS NEW STATE
-        //ACTUALLY, PUNT ON THAT.
-      }   
-      */  
-    } 
-    //BORING - JUST ANOTHER DATA, NO CHANGE OF STATE
-    else {    
-      Meteor.users.update({_id:Meteor.userId()}, {$set:{
-        "profile.currentSequenceIndex": nextSequenceIndex, 
-        "profile.currentJokeId": nextJokeId,   
-        'profile.currentAnalysisStatus': "inProgress"    
-      }}) 
-    }
-  
+      }
+    }  
   } else {
     console.log("no user")
   }
@@ -239,6 +242,8 @@ Meteor.methods({
         } 
       }   
     })
+    console.log('updateNextJoke')
+    updateNextJoke(analysisParams)
   }
 })
 
@@ -443,7 +448,6 @@ function incrementJokeCounts(analysisParams){
     }
   }   
   if (analysisParams['connectTheDotsYN'] != undefined){
-    console.log('inside')
     var insultYN = analysisParams['connectTheDotsYN']
     if (insultYN == "yes"){
       fieldsToInc['connectTheDotsYeses'] = 1

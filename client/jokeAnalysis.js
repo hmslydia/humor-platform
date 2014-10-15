@@ -107,7 +107,7 @@ Template.insultSummary.myInsultData = function(){
 Template.insultSummary.summary = function(){
   var insultYesExplain = Comments.find({type: "insultYes"}).fetch()
   
-  var insultUnclearExplain = [] //Analysis.find({insultYN: "unclear", insultWho: {$not: ""}}).fetch()
+  var insultUnclearExplain = Comments.find({type: "insultUnclear"}).fetch()
   
   // if this user is logged in, 
   //go through all the jokes with non-zero likes
@@ -200,7 +200,7 @@ Template.connectTheDotsSummary.myCTDData = function(){
 Template.connectTheDotsSummary.summary = function(){
   var connectTheDotsYesExplain = Comments.find({type: "connectTheDotsYes"}).fetch()
   
-  var connectTheDotsUnclearExplain = [] //Analysis.find({insultYN: "unclear", insultWho: {$not: ""}}).fetch()
+  var connectTheDotsUnclearExplain = Comments.find({type: "connectTheDotsUnclear"}).fetch()
   
   // if this user is logged in, 
   //go through all the jokes with non-zero likes

@@ -65,6 +65,7 @@
 
 .buttonContainer{
   text-align: center;
+  margin: 10px;
 }
 .startButton{
   padding: 20px;

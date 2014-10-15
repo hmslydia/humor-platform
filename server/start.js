@@ -28,8 +28,11 @@ Accounts.onCreateUser(function(options, user) {
   user.profile.state = "analysis" //|| "peer review" || "open analysis"
   user.profile.waypointParams = {}
   
+  user.profile.group = getGroup() // "A" || "B" || "C"
+  
   //console.log(user.profile.currentSequenceId)
   user.profile.currentJokeId = JokesInSequence.findOne({
+    group: user.profile.group,
     sequence_id: user.profile.currentSequenceId, 
     sequence_index: user.profile.currentSequenceIndex
   }).joke_id
@@ -38,7 +41,7 @@ Accounts.onCreateUser(function(options, user) {
   user.profile.currentAnalysisStatus = "notStarted" //|| "inProgress" || "complete"
   user.profile.currentAnalysisSeenInstructions = false // || true
   
-  user.profile.group = getGroup() // "A" || "B" || "C"
+  
   
   user.profile.pageType = "home" //WHAT SHOULD THE DEFAULT BE "instructions", "task", "waypoint"
   
@@ -50,6 +53,7 @@ Accounts.onCreateUser(function(options, user) {
 joke_count_categories = [
 "submits",
 "skips",
+"dontGetIts",
 "funnyYeses",
 "funnyNos",
 "funnyUnclears",
@@ -95,6 +99,7 @@ populateJokeSequences = function (){
     var joke_id_set1 = joke_id_order.slice(0,offset)
     var joke_id_set2 = joke_id_order.slice(offset,offset*2)
     var joke_id_set3 = joke_id_order.slice(offset*2, offset*3)
+    var joke_id_set4 = joke_id_order.slice(offset*3, offset*4)
     
     for(var i = 0; i<numSequences; i++){
       //create a new sequence
@@ -112,17 +117,6 @@ populateJokeSequences = function (){
         name = "C"
         sequence_idC = JokeSequences.insert({name: name})
       }
-      
-      //var sequence_id = JokeSequences.insert({name: name})
-      
-
-      /*
-      //OLD
-      var new_joke_id_order = _.shuffle(joke_id_order)
-      _.each(new_joke_id_order, function(joke_id, order){
-        JokesInSequence.insert({sequence_id: sequence_id, joke_id: joke_id, order: order})
-      })
-      */
       
       //insert all items into JokesInSequence
       if(i == 0){
@@ -172,7 +166,7 @@ populateJokeSequences = function (){
         */
         
         //ROUND 2
-        _.each(joke_id_set2, function(joke_id, order){
+        _.each(joke_id_set3, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*2 //3
           JokesInSequence.insert({
@@ -185,7 +179,7 @@ populateJokeSequences = function (){
             state: "peer review"
             })
         })
-        _.each(joke_id_set3, function(joke_id, order){
+        _.each(joke_id_set4, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*3 //4
           JokesInSequence.insert({
@@ -217,7 +211,7 @@ populateJokeSequences = function (){
       if(i == 1){
         var group = "B"
         var sequence_id = sequence_idB
-        _.each(joke_id_set2, function(joke_id, order){
+        _.each(joke_id_set3, function(joke_id, order){
           var first = (order == 0)
           var order = order 
           JokesInSequence.insert({
@@ -230,7 +224,7 @@ populateJokeSequences = function (){
             state: "analysis"
             })
         })
-        _.each(joke_id_set3, function(joke_id, order){
+        _.each(joke_id_set4, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*1
           JokesInSequence.insert({
@@ -260,7 +254,7 @@ populateJokeSequences = function (){
         */
         
         //ROUND 2
-        _.each(joke_id_set3, function(joke_id, order){
+        _.each(joke_id_set1, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*2//3
           JokesInSequence.insert({
@@ -273,7 +267,7 @@ populateJokeSequences = function (){
             state: "peer review"
             })
         })
-        _.each(joke_id_set1, function(joke_id, order){
+        _.each(joke_id_set2, function(joke_id, order){
           var first = (order == 0)
           var order = order + offset*3//4
           JokesInSequence.insert({
