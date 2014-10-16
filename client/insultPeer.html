@@ -1,0 +1,68 @@
+<template name="insultPeerReviewContainer">
+   <div class='container'>
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-8">
+        <div class='title'>Does this joke contain an insult?</div>
+      </div>
+      <div class="col-md-2">
+        <div id='progress'> <b> {{numCompleted}} / {{numTotal}}</b> </div>
+      </div> 
+    </div>  
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-6">    
+        <div class='joke_text'>
+          {{{joke_text}}}
+        </div>
+      </div>
+      
+      <div class="col-md-5">  
+      
+        <div class='analysisDiv' >
+          <button id="skip" class="btn btn-warning" title="Go to next joke"> Skip </button> &nbsp; &nbsp;
+          <button id="dontGetIt" class="btn btn-warning" title="Go to next joke"> I don't get it </button>
+        </div>
+       <br>
+        <div class='analysisDiv'>
+          {{> insultPeerReview}}
+          
+        </div>
+        
+        
+               <br>
+        <button id='next' class="btn btn-primary">Submit</button>
+      </div>  
+      <div class="col-md-0"></div>     
+    </div>     
+  </div>
+</template>
+
+<template name="insultPeerReview">
+Select the responses you like or agree with most.<br>
+If two answers you like are similar, please pick only one.
+<!--
+{{#each peerResponses}}
+  
+  <span class="label label-default" id="{{this._id}}">
+
+  {{this.response}}, {{{this.comment}}}
+  </span>
+  <br>
+{{/each}}
+  <span class="label label-default" id="none">
+  (None of these)
+  </span>
+  -->
+  {{#each peerResponses}}
+  
+  <button class="btn btn-default" id="{{this._id}}">
+
+  {{this.response}}, {{{this.comment}}}
+  </button>
+  <br>
+{{/each}}
+  <button class="btn btn-default" id="none">
+  (None of these)
+  </button>
+</template>
