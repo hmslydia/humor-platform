@@ -44,6 +44,26 @@ Router.map(function(){
     },
 
   })  
+  
+  this.route('theories', { 
+    path: 'theories/:joke_id',
+    layoutTemplate: 'standardLayout',
+    template: 'theories',
+    waitOn: function(){ 
+      var joke_id = this.params.joke_id
+      return Meteor.subscribe('jokesById', joke_id)        
+    },
+    yieldTemplates: {
+      'header': {to: 'header'}
+    },
+    loadingTemplate: "thanks",
+    data: function(){  
+      if(this.ready()){   
+        var joke_text = Jokes.findOne().joke_text    
+        return {joke_text: joke_text, joke_id: this.params.joke_id} 
+      }
+    }
+  }) 
   /////////////////////////////////
   //INSULTS
   /////////////////////////////////

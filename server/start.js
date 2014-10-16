@@ -65,11 +65,32 @@ joke_count_categories = [
 "connectTheDotsUnclears"
 ]
 
+theories = [
+  "submits",
+  "skips",
+  "dontGetIts",
+  'funny',
+  'vulgar',
+  'insult',
+  'expectationViolation',
+  'connectTheDots',
+  'lens',
+  'observation'
+]
+
 //RESET SERVER
 createBlankJokeCounts = function () {
   var obj = {joke_id: ""}
   _.each(joke_count_categories, function(category){
     obj[category] = 0
+  })
+  return obj
+}
+
+createBlankTheoryPoints = function () {
+  var obj = {joke_id: ""}
+  _.each(theories, function(theory){
+    obj[theory] = 0
   })
   return obj
 }
@@ -85,6 +106,10 @@ populateJokes = function (){
       var joke_counts = createBlankJokeCounts()
       joke_counts['joke_id'] = task_id
       JokeCounts.insert(joke_counts);
+      
+      var theory_points = createBlankTheoryPoints()
+      theory_points['joke_id'] = task_id
+      TheoryPoints.insert(theory_points);
 
     }
   }  

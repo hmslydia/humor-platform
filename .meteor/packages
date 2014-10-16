@@ -13,3 +13,5 @@ user-session
 iron:router
 rajit:accounts-ui-bootstrap-3
 accounts-password
+mrt:jquery-ui-bootstrap
+

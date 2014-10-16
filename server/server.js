@@ -5,115 +5,6 @@ getTime = function(){
 }
 
 
-
-/*
-var joke_count_blank = {
-  joke_id : "",
-  submits: 0,
-  
-  skips: 0,
-  dontGetIts: 0,
-  
-  funnyYeses: 0,
-  funnyNos: 0, 
-  funnyUnclears: 0,
-  
-  insultYeses: 0,
-  insultNos: 0, 
-  insultUnclears: 0,
-  
-  connectTheDotsYeses: 0,
-  connectTheDotsNos: 0,
-  connectTheDotsUnclears; 0
-}
-*/
-
-
-
-//right now, updateNextJoke is doing it's calculations RELAVTIVELy
-//it would be better to do them absolutely.
-//so if the user just did joke_id: abc, joke_index: 3, that would be given to
-//this function and it would just increment, rather than using the current stuff.
-//WOULD THAT MATTER?
-updateNextJoke = function(){
-  if(Meteor.user()){
-    var sequenceId = Meteor.user().profile.currentSequenceId //no change
-    var sequenceIndex = Meteor.user().profile.currentSequenceIndex //CHANGE*****
-    var sequenceLastIndex = Meteor.user().profile.currentSequenceLastIndex //no change
-    
-    var jokeId = Meteor.user().profile.currentJokeId //CHANGE *** 
-    var analysisType = Meteor.user().profile.currentAnalysisType //could CHANGE, if first
-    var analysisStatus = Meteor.user().profile.currentAnalysisStatus //could CHANGE, if first
-    var analysisSeenInstructions = Meteor.user().profile.currentAnalysisSeenInstructions // could CHANGE, if first
-    var state = Meteor.user().profile.state //could CHANGE
-    var group = Meteor.user().profile.group //no change 
-    
-    var nextSequenceIndex = sequenceIndex + 1
-    
-    //find the next jokeId
-    /*
-
-    sequence_id: sequence_id,   
-    group: group,               
-    joke_id: joke_id,            
-    sequence_index: order,    //SHOULD BE CALLED 'SEQUENCE_INDEX'           
-    first: first,               
-    type: "insult",                         
-    state: 1    //SHOULD BE CALLED 'STATE'                
-            
-    */
-    
-    var nextUp = JokesInSequence.findOne({group: group, sequence_index: nextSequenceIndex})
-    //Now figure out how to update the state
-    
-    //what's different between the state where I am and the state where I need to be.
-    //update the currentSequenceIndex
-    
-    if(nextUp === undefined){
-      Meteor.users.update({_id:Meteor.userId()}, {$set:{ "profile.pageType": "home"}})       
-    } else {
-      var nextFirst = nextUp.first
-      var nextJokeId = nextUp.joke_id
-      var nextState = nextUp.state
-      
-      //STATE CHANGE
-      if(nextFirst){
-        //we have to propigate a change of state
-        //if(nextState == "analysis"){
-          Meteor.users.update({_id:Meteor.userId()}, {$set:{
-            "profile.currentSequenceIndex": nextSequenceIndex, 
-            "profile.currentJokeId": nextJokeId,      
-          
-            'profile.currentAnalysisType': nextUp.type,
-            'profile.currentAnalysisStatus': "notStarted", 
-            'profile.currentAnalysisSeenInstructions': false,
-            'profile.state': nextUp.state,
-            
-            "profile.pageType": 'waypoint', 
-            
-            //POPULATE WAYPOINT PARAMETERS IF I WANT TO DISPLAY ANY STATISTICS, punt for now.
-          }}) 
-          /*
-        }else if (nextState == "peer review"){
-          //CHECK IF WE HAVE MET THE PRECONDITIONS FOR THIS NEW STATE
-          //ACTUALLY, PUNT ON THAT.
-        }   
-        */  
-      } 
-      //BORING - JUST ANOTHER DATA, NO CHANGE OF STATE
-      else {    
-        Meteor.users.update({_id:Meteor.userId()}, {$set:{
-          "profile.currentSequenceIndex": nextSequenceIndex, 
-          "profile.currentJokeId": nextJokeId,   
-          'profile.currentAnalysisStatus': "inProgress"    
-        }}) 
-      }
-    }  
-  } else {
-    console.log("no user")
-  }
-}
-
 Meteor.methods({ 
   get_joke_sequence : function(){
     return joke_id_order
@@ -129,6 +20,15 @@ Meteor.methods({
         "profile.waypointParams": {}
       }})     
   }, 
+  submitTheoryAnalysis: function(params){
+    console.log(params)
+    params.time = getTime()
+    params.user_id = Meteor.userId() || null
+        
+    Theories.insert(params)      
+    tallyTheoryPoints(params)
+  },
+  
   submitAnalysis : function(params){
     /*
     params = {
@@ -405,6 +305,30 @@ createSubsetDict = function (keys, oldDict){
   return subsetDict
 }
 
+
+
+/*
+var joke_count_blank = {
+  joke_id : "",
+  submits: 0,
+  
+  skips: 0,
+  dontGetIts: 0,
+  
+  funnyYeses: 0,
+  funnyNos: 0, 
+  funnyUnclears: 0,
+  
+  insultYeses: 0,
+  insultNos: 0, 
+  insultUnclears: 0,
+  
+  connectTheDotsYeses: 0,
+  connectTheDotsNos: 0,
+  connectTheDotsUnclears; 0
+}
+*/
+
 function incrementJokeCounts(analysisParams){
   // update JokeCounts
   var fieldsToInc = {submits: 1}
@@ -463,6 +387,129 @@ function incrementJokeCounts(analysisParams){
   JokeCounts.update({joke_id: joke_id}, {$inc: fieldsToInc })  
 }
 
+tallyTheoryPoints = function(analysisParams){
+  // update JokeCounts
+  var fieldsToInc = {submits: 1}
 
+  if (analysisParams['skip'] != undefined){
+    if (analysisParams['skip'] == true){
+      fieldsToInc['skips'] = 1
+    }
+  }
+  if (analysisParams['dontGetIt'] != undefined){
+    if (analysisParams['dontGetIt'] == true){  
+      fieldsToInc['dontGetIts'] = 1
+    }
+  }
+  
+  var theories = [
+    'funny',
+    'vulgar',
+    'insult',
+    'expectationViolation',
+    'connectTheDots',
+    'lens',
+    'observation'
+  ]
+  
+  _.each(theories, function(theory){
+    if(analysisParams[theory] != undefined){
+      var ans = analysisParams[theory]
+      if (ans == "yes"){
+        fieldsToInc[theory] = 1
+      }
+      if (ans == "unclear"){
+        fieldsToInc[theory] = 0.5
+      }
+    }
+  })
+
+  var joke_id = analysisParams['joke_id']
+  TheoryPoints.update({joke_id: joke_id}, {$inc: fieldsToInc })  
+}
+
+//right now, updateNextJoke is doing it's calculations RELAVTIVELy
+//it would be better to do them absolutely.
+//so if the user just did joke_id: abc, joke_index: 3, that would be given to
+//this function and it would just increment, rather than using the current stuff.
+//WOULD THAT MATTER?
+updateNextJoke = function(){
+  if(Meteor.user()){
+    var sequenceId = Meteor.user().profile.currentSequenceId //no change
+    var sequenceIndex = Meteor.user().profile.currentSequenceIndex //CHANGE*****
+    var sequenceLastIndex = Meteor.user().profile.currentSequenceLastIndex //no change
+    
+    var jokeId = Meteor.user().profile.currentJokeId //CHANGE *** 
+    var analysisType = Meteor.user().profile.currentAnalysisType //could CHANGE, if first
+    var analysisStatus = Meteor.user().profile.currentAnalysisStatus //could CHANGE, if first
+    var analysisSeenInstructions = Meteor.user().profile.currentAnalysisSeenInstructions // could CHANGE, if first
+    var state = Meteor.user().profile.state //could CHANGE
+    var group = Meteor.user().profile.group //no change 
+    
+    var nextSequenceIndex = sequenceIndex + 1
+    
+    //find the next jokeId
+    /*
+
+    sequence_id: sequence_id,   
+    group: group,               
+    joke_id: joke_id,            
+    sequence_index: order,    //SHOULD BE CALLED 'SEQUENCE_INDEX'           
+    first: first,               
+    type: "insult",                         
+    state: 1    //SHOULD BE CALLED 'STATE'                
+            
+    */
+    
+    var nextUp = JokesInSequence.findOne({group: group, sequence_index: nextSequenceIndex})
+    //Now figure out how to update the state
+    
+    //what's different between the state where I am and the state where I need to be.
+    //update the currentSequenceIndex
+    
+    if(nextUp === undefined){
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{ "profile.pageType": "home"}})       
+    } else {
+      var nextFirst = nextUp.first
+      var nextJokeId = nextUp.joke_id
+      var nextState = nextUp.state
+      
+      //STATE CHANGE
+      if(nextFirst){
+        //we have to propigate a change of state
+        //if(nextState == "analysis"){
+          Meteor.users.update({_id:Meteor.userId()}, {$set:{
+            "profile.currentSequenceIndex": nextSequenceIndex, 
+            "profile.currentJokeId": nextJokeId,      
+          
+            'profile.currentAnalysisType': nextUp.type,
+            'profile.currentAnalysisStatus': "notStarted", 
+            'profile.currentAnalysisSeenInstructions': false,
+            'profile.state': nextUp.state,
+            
+            "profile.pageType": 'waypoint', 
+            
+            //POPULATE WAYPOINT PARAMETERS IF I WANT TO DISPLAY ANY STATISTICS, punt for now.
+          }}) 
+          /*
+        }else if (nextState == "peer review"){
+          //CHECK IF WE HAVE MET THE PRECONDITIONS FOR THIS NEW STATE
+          //ACTUALLY, PUNT ON THAT.
+        }   
+        */  
+      } 
+      //BORING - JUST ANOTHER DATA, NO CHANGE OF STATE
+      else {    
+        Meteor.users.update({_id:Meteor.userId()}, {$set:{
+          "profile.currentSequenceIndex": nextSequenceIndex, 
+          "profile.currentJokeId": nextJokeId,   
+          'profile.currentAnalysisStatus': "inProgress"    
+        }}) 
+      }
+    }  
+  } else {
+    console.log("no user")
+  }
+}
 
 

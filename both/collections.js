@@ -21,7 +21,34 @@ Jokes = new Meteor.Collection("jokes");
 
 */
 
+Theories = new Meteor.Collection("theories");
+/*
+joke_id
+user_id
+context
+*/
 
+TheoryPoints = new Meteor.Collection("theoryPoints");
+/* This aggregates all the information logged by the individual responses in the Analysis Collection
+  
+  joke_id : corresponding joke id,
+  submits: number of submits,
+  
+  skips: # of skips,
+  dontGetIts: # of dontGetIts,
+  
+  funny: 
+  vulgar: 
+   
+  insult:
+  expectationViolation:
+  connectTheDots:
+  lens:
+  observational:
+   
+
+  
+*/
 
 JokeCounts = new Meteor.Collection("joke_counts");
 /* This aggregates all the information logged by the individual responses in the Analysis Collection

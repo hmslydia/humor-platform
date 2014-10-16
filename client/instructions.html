@@ -3,6 +3,13 @@
     <div class="row">
       <div class="col-md-2"></div>
       <div class="col-md-8">
+      
+      
+
+    
+      
+      
+      
         <div align="center" class='title'>
           Why are jokes funny?
         </div>
@@ -15,18 +22,34 @@
         </p>
         
         <p>
-        Hypothesis we are testing for why jokes are funny:
-        </p>
-        
-        <h2>Insult</h2>
-        Plato said that the punchline of all jokes are insults. Was he right?
-        
-        
-        
+        Theories we are testing for why jokes are funny:
+        </p>        
         
       </div>
       <div class="col-md-2"></div>
     </div> 
+    
+      {{> insultInstructionsIntro}}
+      {{> expectationViolationInstructionsIntro}}
+      {{> connectTheDotsInstructionsIntro}}
+      
+      {{> lensInstructionsIntro}}
+      
+      {{> observationIntro}}
+    </div>  
+
+</template>
+
+<template name="insultInstructionsIntro">
+    <div class="row top-buffer">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">  
+        <h2>Insult</h2>
+        Plato said that the punchline of all jokes are insults. Was he right?
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+
     <div class="row top-buffer">
       <div class="col-md-2"></div>
       <div class="col-md-4">  
@@ -41,9 +64,7 @@
         <span class='example_question'>Why is it insulting? </span><span class="example_answer">It implies toads are ugly.</span>
       
       </div>      
-      <div class="col-md-2"></div>
-      
-      
+      <div class="col-md-2"></div>      
     </div>      
     
     <div class="row top-buffer">
@@ -52,8 +73,137 @@
         The question is not whether the joke contains an insult, but whether the insult is the punchline.        
       </div>      
       <div class="col-md-2"></div>      
+    </div>  
+    
+    <div class="row top-buffer">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">  
+        It's not always easy to tell if something is an insult.  Don't over think it, just go with you gut reaction.        
+      </div>      
+      <div class="col-md-2"></div>      
     </div>   
+
+    <div class="row top-buffer">
+      <div class="col-md-2"></div>
+      <div class="col-md-4">  
+                
+        <div class="insultExemplarText">
+          There are three types of people in the world: people who can count and people who can't.
+        </div>             
+      </div>
+      <div class="col-md-4">
+        <span class='example_question'>Is the punchline an insult? </span><span class="example_yes">Maybe. The joke is at the expense of the person telling it. </span><br>
+
+      
+      </div>      
+      <div class="col-md-2"></div>      
+    </div> 
+</template>
+
+<template name="expectationViolationInstructionsIntro">
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">  
+      <h2>Expectation Violation</h2>
+      A joke can set you up to expect one thing, but then violate that expectation by giving you something else.
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">  
+              
+      <div class="insultExemplarText">
+          JOKE
+      </div>             
+    </div>
+    <div class="col-md-4">
+      <span class='example_question'>Does this joke violate expectations? </span>
+      <span class="example_yes">Yes.</span><br>
       
     
-   </div>
+    </div>      
+    <div class="col-md-2"></div>      
+  </div>               
+</template>
+
+<template name="connectTheDotsInstructionsIntro">
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">  
+      <h2>Connect the Dots</h2>
+      A joke can be funny because it makes you figure out how to connect the dots between bits of information it gives you. 
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">  
+              
+      <div class="insultExemplarText">
+          There are three types of people in the world: people who can count and people who can't.
+      </div>             
+    </div>
+    <div class="col-md-4">
+      <span class='example_question'>Does this joke make you connect the dots? </span><br>
+      <span class="example_yes">Yes.</span> You have to infer that the speaker can't count because he said "3 types of people," but then listed only two.
+      
+    
+    </div>      
+    <div class="col-md-2"></div>      
+  </div>               
+</template>
+
+<template name="lensInstructionsIntro">
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">  
+      <h2>Lens</h2>
+      The philosopher Schopenhauer said that jokes are funny because the force us to see things through a new lens. 
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">  
+              
+      <div class="insultExemplarText">
+          I was reviewing a spreadsheet with a coworker and suggested that she try to make it more concise, to which she replied: "I know it looks big, but trust me, it was a lot bigger beforehand." <br>"That's what she said."
+      </div>             
+    </div>
+    <div class="col-md-4">
+      <span class='example_question'>Does this joke contain a lens shift? </span><br>
+      <span class="example_yes">Yes.</span> The first speaker was talking about spreadsheets. When the second person said "That's what she said" the spreadsheet comment was re-imagined in sexual terms.  Lens 1: spreadsheets, Lens 2: sexual innuendo.       
+    
+    </div>      
+    <div class="col-md-2"></div>      
+  </div>               
+</template>
+
+<template name="observationIntro">
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-8">  
+      <h2>Observations</h2>
+      Sometimes all a joke needs to do is point something out. It can be clever, or obvious, or astounding. 
+    </div>
+    <div class="col-md-2"></div>
+  </div>
+
+  <div class="row top-buffer">
+    <div class="col-md-2"></div>
+    <div class="col-md-4">  
+              
+      <div class="insultExemplarText">
+          Men don't care what's on TV. They only care what else is on TV.
+      </div>             
+    </div>
+    <div class="col-md-4">
+      <span class='example_question'>Does this joke contain an observation? </span><br>
+      <span class="example_yes">Yes.</span> Men like to channel surf, which is sort of senseless.    </div>      
+    <div class="col-md-2"></div>      
+  </div>               
 </template>

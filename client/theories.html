@@ -1,0 +1,151 @@
+<template name="theories">
+  <div class='container'>
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-8">
+        <div class='title'>Does this joke contain an insult?</div>
+      </div>
+      <div class="col-md-2">
+        <div id='progress'> <b> {{numCompleted}} / {{numTotal}}</b> </div>
+      </div> 
+    </div>  
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-6">    
+        <div class='joke_text'>
+          {{{joke_text}}}
+        </div>
+      </div>
+      
+      <div class="col-md-5">  
+      
+        <div class='analysisDiv' >
+          <button id="skip" class="btn btn-warning" title="Go to next joke"> Skip </button> &nbsp; &nbsp;
+          <button id="dontGetIt" class="btn btn-warning" title="Go to next joke"> I don't get it </button>
+        </div>
+       <br>
+        <form id="form">
+          <div class='analysisDiv'>
+             {{> funnyAnalysis}}
+             {{> vulgarAnalysis}}
+             {{> theoryAnalysis}}
+            
+          </div>
+        </form>
+        
+               <br>
+        <button id='next' class="btn btn-primary">Submit</button>
+      </div>  
+      <div class="col-md-0"></div>     
+    </div>     
+  </div>
+</template>
+
+<template name="vulgarAnalysis">
+  <div class="analysis">
+    Is this joke vulgar?<br>
+    <div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default">
+          <input type="radio" name="vulgar" value="yes"> Yes
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="vulgar" value="unclear"> Maybe
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="vulgar" value="no"> No
+        </label>
+      </div>      
+    </div> 
+  </div>
+</template>
+
+<template name="theoryAnalysis">
+  <br>
+  Which of these theories apply?<br>
+  <div class="analysis">    
+    Insult:
+    <div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default">
+          <input type="radio" name="insult" value="yes"> Yes
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="insult" value="unclear"> Maybe
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="insult" value="no"> No
+        </label>
+      </div>      
+    </div> 
+  </div>
+  
+  
+  <div class="analysis">    
+    Expectation Violation:
+    <div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default">
+          <input type="radio" name="expectationViolation" value="yes"> Yes
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="expectationViolation" value="unclear"> Maybe
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="expectationViolation" value="no"> No
+        </label>
+      </div>      
+    </div> 
+  </div>
+  
+  <div class="analysis">  
+    Connect the Dots:
+    <div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default">
+          <input type="radio" name="connectTheDots" value="yes"> Yes
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="connectTheDots" value="unclear"> Maybe
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="connectTheDots" value="no"> No
+        </label>
+      </div>      
+    </div>   
+  </div>
+  
+  <div class="analysis">  
+    Lens:
+    <div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default">
+          <input type="radio" name="lens" value="yes"> Yes
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="lens" value="unclear"> Maybe
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="lens" value="no"> No
+        </label>
+      </div>      
+    </div>   
+  </div>
+  
+  <div class="analysis">  
+    Observation:
+    <div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default">
+          <input type="radio" name="observation" value="yes"> Yes
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="observation" value="unclear"> Maybe
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="observation" value="no"> No
+        </label>
+      </div>      
+    </div>   
+  </div>
+</template>

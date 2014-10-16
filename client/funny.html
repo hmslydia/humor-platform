@@ -1,7 +1,9 @@
 <template name="funnyAnalysis">
+
   <div>
     <div>
-      {{#if showOptional}}<i>(optional)</i>{{/if}} Is this joke funny?          
+      {{#if showOptional}}<i>(optional)</i>{{/if}} Is this joke funny? 
+      <!--        
       <table>
         <tr class="spaceUnder">
           <td> <input type="radio" name="funny" value="yes" {{insultYesChecked}}></td>
@@ -15,7 +17,25 @@
           <td><input type="radio" name="funny" value="unclear" {{insultUnclearChecked}}></td>
           <td><span id ='funny_unclear' class='funny_answer radio_answer_text'>Maybe?</span></td>
         </tr>
-      </table>                  
+      </table> 
+      -->
+  <div>
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default">
+        <input type="radio" name="funny" value="yes"> Yes
+      </label>
+      <label class="btn btn-default">
+        <input type="radio" name="funny" value="no"> Maybe
+      </label>
+      <label class="btn btn-default">
+        <input type="radio" name="funny" value="unclear"> No
+      </label>
+    </div>      
+  </div>   
+      
+      
+      
+                       
     </div>
   </div>
 </template>
