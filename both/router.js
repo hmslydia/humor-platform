@@ -34,7 +34,16 @@ Router.map(function(){
     },
     template: 'waypoint',
   })
-  
+
+
+  this.route('instructions', { 
+    path: 'instructions',
+    layoutTemplate: 'standardLayout',
+    yieldTemplates: {
+      'header': {to: 'header'}
+    },
+
+  })  
   /////////////////////////////////
   //INSULTS
   /////////////////////////////////
