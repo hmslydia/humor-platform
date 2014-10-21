@@ -1,4 +1,4 @@
-max_num_jokes = 20
+max_num_jokes = 200
 
 getTime = function(){
   return (new Date()).getTime()
@@ -27,6 +27,7 @@ Meteor.methods({
         
     Theories.insert(params)      
     tallyTheoryPoints(params)
+    updateNextJoke(params)
   },
   
   submitAnalysis : function(params){
@@ -470,7 +471,7 @@ updateNextJoke = function(){
     if(nextUp === undefined){
       Meteor.users.update({_id:Meteor.userId()}, {$set:{ "profile.pageType": "home"}})       
     } else {
-      var nextFirst = nextUp.first
+      var nextFirst = false //nextUp.first
       var nextJokeId = nextUp.joke_id
       var nextState = nextUp.state
       

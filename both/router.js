@@ -60,7 +60,12 @@ Router.map(function(){
     data: function(){  
       if(this.ready()){   
         var joke_text = Jokes.findOne().joke_text    
-        return {joke_text: joke_text, joke_id: this.params.joke_id} 
+        return {
+          joke_text: joke_text, 
+          joke_id: this.params.joke_id,
+          numCompleted: Meteor.user().profile.currentSequenceIndex + 1,
+          numTotal: 20
+          } 
       }
     }
   }) 

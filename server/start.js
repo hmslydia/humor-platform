@@ -99,7 +99,11 @@ populateJokes = function (){
   //For each joke, insert a Joke and a corresponding JokeCount object.
   if (Jokes.find().count() === 0) {
     for (var i = 0; i < max_num_jokes; i++) {
-			var thisItem = jokes[i]
+			//var thisItem = tweets[i] //jokes[i]
+			//thisItem.joke_text = thisItem.text
+			
+			var thisItem = jokes2[i]
+			thisItem.joke_text = thisItem.text
       var task_id = Jokes.insert(thisItem);
       
       

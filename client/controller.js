@@ -21,6 +21,7 @@ analysisType = "insult" || "connectTheDots"
 
 Template.nextUp.helpers({
   'copyText': function(){
+    /* //OLD STUFF FROM experiment_with_keeping_state
     if (    Meteor.user().profile.currentAnalysisStatus == "notStarted" && 
             Meteor.user().profile.currentAnalysisType == "insult" && 
             Meteor.user().profile.state == "analysis" &&
@@ -68,7 +69,14 @@ Template.nextUp.helpers({
     } else {
       return "I don't know where to go next"
     }
+    */
+    
+      return "Start analyzing now!"
   },
+  
+  
+  
+  
   'buttonText': function(){
     return "Begin"
   }
@@ -78,9 +86,10 @@ Template.nextUp.events({
   'click #resumeButton': function(){
     //calc next page type
     var pageType = Meteor.user().profile.pageType 
-    var state = Meteor.user().profile.state 
+    //var state = Meteor.user().profile.state 
     
     //WORK HERE - I WILL NEED MORE COMPLEX LOGIC (maybe)
+    /*
     if (pageType == "home"){
       Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.pageType": "instructions" }})
     } else
@@ -96,7 +105,10 @@ Template.nextUp.events({
     {
       Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.pageType": "home" }})
     }  
-  
+    */
+    if (pageType == "home"){
+      Meteor.users.update({_id:Meteor.userId()}, {$set:{"profile.pageType": "task" }})
+    }
     goToNextJoke()
   }
 })
@@ -115,6 +127,22 @@ goToNextJoke = function () {
     
     var pageType = Meteor.user().profile.pageType 
 
+    if (pageType == "home"){
+      Router.go("instructions") //should really need this
+      return
+    } 
+    
+    if (pageType == "task"){
+    
+      var params = {
+        joke_id: jokeId
+      }
+        //console.log(params)
+      Router.go("theories", params)
+      return
+    } 
+    
+    /*
     if (pageType == "home"){
       Router.go("/") //should really need this
       return
@@ -196,7 +224,7 @@ goToNextJoke = function () {
         return
       }
     }
-    
+    */
   }else{
     console.log("no user")
   }

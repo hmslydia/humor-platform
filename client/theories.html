@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-1"></div>
       <div class="col-md-8">
-        <div class='title'>Does this joke contain an insult?</div>
+        <div class='title'>Why is this funny?</div>
       </div>
       <div class="col-md-2">
         <div id='progress'> <b> {{numCompleted}} / {{numTotal}}</b> </div>
@@ -20,16 +20,20 @@
       <div class="col-md-5">  
       
         <div class='analysisDiv' >
-          <button id="skip" class="btn btn-warning" title="Go to next joke"> Skip </button> &nbsp; &nbsp;
-          <button id="dontGetIt" class="btn btn-warning" title="Go to next joke"> I don't get it </button>
+          <button id="skip" class="btn btn-primary" title="Go to next joke"> Skip </button> &nbsp; &nbsp;
+          <button id="dontGetIt" class="btn btn-primary" title="Go to next joke"> I don't get it </button>
         </div>
        <br>
         <form id="form">
           <div class='analysisDiv'>
              {{> funnyAnalysis}}
              {{> vulgarAnalysis}}
+
+             <br>
+             {{> theoryList}}  
+             <!--           
              {{> theoryAnalysis}}
-            
+             -->
           </div>
         </form>
         
@@ -39,6 +43,46 @@
       <div class="col-md-0"></div>     
     </div>     
   </div>
+</template>
+
+<template name="theoryList">
+  Select All the theories that apply to this joke:
+  <div class="theoryToggle">
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default"><input type="checkbox" name="insult" id="insult">Insult</label>
+    </div>
+  </div>
+
+  <div class="theoryToggle">   
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default"><input type="checkbox" name="wordPlay" id="wordPlay">Word Play</label>
+    </div>
+  </div>
+
+  <div class="theoryToggle">    
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default"><input type="checkbox" name="expectationViolation" id="expectationViolation">Expectation Violation</label>
+    </div>
+  </div>
+
+  <div class="theoryToggle">     
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default"><input type="checkbox" name="connectTheDots" id="connectTheDots">Connect the Dots</label>
+    </div>
+  </div>
+
+  <div class="theoryToggle">     
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default"><input type="checkbox" name="lens" id="lens">Lens</label>
+    </div>
+  </div>
+
+  <div class="theoryToggle">     
+    <div class="btn-group" data-toggle="buttons">
+      <label class="btn btn-default"><input type="checkbox" name="observation" id="observation">Observation</label>
+    </div>      
+  </div>
+
 </template>
 
 <template name="vulgarAnalysis">
@@ -80,7 +124,23 @@
     </div> 
   </div>
   
-  
+  <div class="analysis">  
+    Word Play:
+    <div>
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn btn-default">
+          <input type="radio" name="wordPlay" value="yes"> Yes
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="wordPlay" value="unclear"> Maybe
+        </label>
+        <label class="btn btn-default">
+          <input type="radio" name="wordPlay" value="no"> No
+        </label>
+      </div>      
+    </div>   
+  </div>
+    
   <div class="analysis">    
     Expectation Violation:
     <div>
@@ -148,4 +208,6 @@
       </div>      
     </div>   
   </div>
+  
+
 </template>

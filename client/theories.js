@@ -1,3 +1,7 @@
+Template.theories.rendered = function(){
+  console.log(this)
+}
+
 Template.theories.events({
   'click #next': function(){
     var formData = $('form').serializeArray()  
@@ -14,36 +18,40 @@ Template.theories.events({
       var value = elt["value"]
       params[name] = value
     })
-    console.log(params)
+    clear()
     
     Meteor.call('submitTheoryAnalysis', params, function(){
-      //goToNextJoke()
+      goToNextJoke()
     })
     
     
   },
   
   'click #skip': function(){
-    //var formData = $('form').serializeArray()    
-    formData.joke_id = this.joke_id
-    formData.context = "theories"
-    formData.skip = true
-    formData.dontGetIt = false
-
-    Meteor.call('submitTheoryAnalysis', formData, function(){
+    var params = {}    
+    params.joke_id = this.joke_id
+    params.context = "theories"
+    params.skip = true
+    params.dontGetIt = false
+    clear()
+    Meteor.call('submitTheoryAnalysis', params, function(){
       goToNextJoke()
     })
   },
   
   'click #dontGetIt': function(){
-    //var formData = $('form').serializeArray()    
-    formData.joke_id = this.joke_id
-    formData.context = "theories"
-    formData.skip = false
-    formData.dontGetIt = true
-
-    Meteor.call('submitTheoryAnalysis', formData, function(){
+    var params = {}     
+    params.joke_id = this.joke_id
+    params.context = "theories"
+    params.skip = false
+    params.dontGetIt = true
+    clear()
+    Meteor.call('submitTheoryAnalysis', params, function(){
       goToNextJoke()
     })
   }  
 })
+
+function clear(){
+  $("label.active").each(function(label){$(this).removeClass("active")})
+}
