@@ -5,3 +5,7 @@
 .theoryToggle{
   margin: 5px;
 }
+
+.theoryToggle .btn-default{
+  width: 180px;
+}

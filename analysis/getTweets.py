@@ -20,7 +20,7 @@ x = twitter.statuses.user_timeline(screen_name="best_jokes", count=100)
 
 # The first 'tweet' in the timeline
 
-jokes_out = open('jokes2.js', 'w')
-jokes_out.write('jokes2 = ')
+jokes_out = open('jokes2.py', 'w')
+#jokes_out.write('jokes2 = ')
 jokes_out.write(json.dumps(x))
 

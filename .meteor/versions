@@ -47,6 +47,7 @@ mrt:jquery-ui-bootstrap@1.8.16
 npm-bcrypt@0.7.7
 observe-sequence@1.0.2
 ordered-dict@1.0.0
+pahans:reactive-modal@1.0.0
 rajit:accounts-ui-bootstrap-3@0.3.10
 random@1.0.0
 reactive-dict@1.0.3
