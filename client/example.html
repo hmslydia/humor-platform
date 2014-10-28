@@ -1,0 +1,61 @@
+<template name="example">
+  <div class='container'>
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-8">
+        <div class='title'>Example Analysis</div>
+      </div>
+      <div class="col-md-2">
+      </div> 
+    </div>  
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-6">    
+        <div class='joke_text'>
+          {{{example.joke_text}}}
+        </div>
+      </div>
+
+       
+      <div class="col-md-5"></div>     
+    </div> 
+    
+    <div class="row">
+      <div class="col-md-1"></div>
+      <div class="col-md-11">
+        <div class='title'>Which joke patterns are present?</div>
+      </div>
+    </div>
+    {{#each example.analysis}}
+      {{> exampleAnalysis}}
+    {{/each}}
+        
+        {{#if hasAnotherExample}}
+           <div id="seeExample">
+             <button id='seeEx1' class="btn btn-primary btn-lg"><div>See Next Example</div></button>
+             <br>
+           </div>
+        {{/if}}
+        
+      <div id="nextUp">
+      <button id='nextUp' class="btn btn-success btn-lg"><div>Analyze jokes</div></button>
+      </div>
+        
+  </div>
+</template>
+
+<template name="exampleAnalysis">
+  <div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-2">    
+      <div class="btn {{buttonType}}" style="width: 150px; margin-bottom: 10px;">{{tag}}</div>
+    </div>
+    <div class="col-md-8">
+      <div style="margin-bottom: 10px">
+        <span class="title">{{answer}}</span>
+        {{{analysis}}}
+      </div>
+      <br>
+    </div>    
+  </div>
+</template>
