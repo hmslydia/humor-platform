@@ -64,6 +64,10 @@ Meteor.startup(function(){
 });
 
 
+Template.theories.rendered = function(){
+  console.log('rendered theories')
+  clear()
+}
 
 Template.theories.events({
   'click #next': function(){
@@ -73,8 +77,6 @@ Template.theories.events({
     var params = {}  
     params.joke_id = this.joke_id
     params.context = "theories"
-    params.skip = false
-    params.dontGetIt = false
     params.offensive = false
     
     _.each(formData, function(elt){
@@ -83,38 +85,16 @@ Template.theories.events({
       params[name] = value
     })
     clear()
+    console.log("clear")
     
-    Meteor.call('submitTheoryAnalysis', params, function(){
-      goToNextJoke()
+    Meteor.call('submitTypeAnalysis', params, function(){
+      clear()
+      goToNextPage()
     })
     
     
   },
-  /*
-  'click #skip': function(){
-    var params = {}    
-    params.joke_id = this.joke_id
-    params.context = "theories"
-    params.skip = true
-    params.dontGetIt = false
-    clear()
-    Meteor.call('submitTheoryAnalysis', params, function(){
-      goToNextJoke()
-    })
-  },
-  
-  'click #dontGetIt': function(){
-    var params = {}     
-    params.joke_id = this.joke_id
-    params.context = "theories"
-    params.skip = false
-    params.dontGetIt = true
-    clear()
-    Meteor.call('submitTheoryAnalysis', params, function(){
-      goToNextJoke()
-    })
-  },
-  */
+
   'click #offensive': function(){
     var params = {}    
     params.joke_id = this.joke_id
@@ -122,14 +102,17 @@ Template.theories.events({
     //params.skip = false
     //params.dontGetIt = false
     params.offensive = true
-    clear()
-    Meteor.call('submitTheoryAnalysis', params, function(){
-      goToNextJoke()
+    console.log('offensive')
+    Meteor.call('submitTypeAnalysis', params, function(){
+      //clear()
+      goToNextPage()
     })    
   }  
 })
 
 clear = function (){
+  console.log("clear")
+  $('.theoryToggle').hide()
   $("label.active").each(function(label){$(this).removeClass("active")})
 }
 

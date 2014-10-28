@@ -1,40 +1,21 @@
 <template name="funnyAnalysis">
-
   <div>
     <div>
-      {{#if showOptional}}<i>(optional)</i>{{/if}} Is this joke funny? 
-      <!--        
-      <table>
-        <tr class="spaceUnder">
-          <td> <input type="radio" name="funny" value="yes" {{insultYesChecked}}></td>
-          <td> <span id ='funny_yes' class='funny_answer radio_answer_text'>Yes</span></td>
-        </tr>    
-        <tr class="spaceUnder">
-          <td><input type="radio" name="funny" value="no" {{insultNoChecked}}></td>
-          <td><span id ='funny_no' class='funny_answer radio_answer_text'>No</span></td>
-        </tr>
-        <tr>
-          <td><input type="radio" name="funny" value="unclear" {{insultUnclearChecked}}></td>
-          <td><span id ='funny_unclear' class='funny_answer radio_answer_text'>Maybe?</span></td>
-        </tr>
-      </table> 
-      -->
-  <div>
-    <div class="btn-group" data-toggle="buttons">
-      <label class="btn btn-success">
-        <input type="radio" name="funny" value="yes"> Funny
-      </label>
-      <label class="btn btn-warning">
-        <input type="radio" name="funny" value="unclear"> Kinda
-      </label>
-      <label class="btn btn-danger">
-        <input type="radio" name="funny" value="no"> Not funny
-      </label>
-    </div>      
-  </div>   
-      
-      
-      
+      How funny do <b>you</b> find this joke? 
+  
+      <div>
+        <div class="btn-group" data-toggle="buttons">
+          <label class="btn btn-default">
+            <input type="radio" name="funny" value="yes"> Funny
+          </label>
+          <label class="btn btn-default">
+            <input type="radio" name="funny" value="unclear"> Kinda
+          </label>
+          <label class="btn btn-default">
+            <input type="radio" name="funny" value="no"> Not funny
+          </label>
+        </div>      
+      </div>         
                        
     </div>
   </div>

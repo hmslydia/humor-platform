@@ -1,3 +1,4 @@
+max_num_jokes = 100
 //NEW USERS
 
 function getGroup(){
@@ -5,15 +6,12 @@ function getGroup(){
   //Find out how many users there are and assign this next user to 
   
   var numUsers = Meteor.users._collection.find().count()
-  var mod3 = numUsers % 2 //3
+  var mod3 = numUsers % 2 
   if(mod3 == 0){
     return "A"
   }
   if (mod3 == 1){
     return "B"
-  }
-  if(mod3 == 2){
-    return "C"
   }
 }
 
@@ -25,72 +23,47 @@ Accounts.onCreateUser(function(options, user) {
   user.profile.currentSequenceId = JokeSequences.findOne()._id
   user.profile.currentSequenceIndex = 0
   user.profile.currentSequenceLastIndex = 99
-  user.profile.state = "analysis" //|| "peer review" || "open analysis"
-  user.profile.waypointParams = {}
   
-  user.profile.group = getGroup() // "A" || "B" || "C"
+  user.profile.sequence_name = getGroup() // "A" || "B" || "C"
   
-  //console.log(user.profile.currentSequenceId)
   user.profile.currentJokeId = JokesInSequence.findOne({
-    group: user.profile.group,
+    name: user.profile.sequence_name,
     sequence_id: user.profile.currentSequenceId, 
     sequence_index: user.profile.currentSequenceIndex
   }).joke_id
   
-  user.profile.currentAnalysisType = "insult" // \\ "connectTheDots" || "expectationViolation"
-  user.profile.currentAnalysisStatus = "notStarted" //|| "inProgress" || "complete"
-  user.profile.currentAnalysisSeenInstructions = false // || true
   
-  
-  
-  user.profile.pageType = "home" //WHAT SHOULD THE DEFAULT BE "instructions", "task", "waypoint"
+  user.profile.pageType = "home" 
   
   
   return user;
 });
 
 
-joke_count_categories = [
-"submits",
-"skips",
-"dontGetIts",
-"funnyYeses",
-"funnyNos",
-"funnyUnclears",
-"insultYeses",
-"insultNos",
-"insultUnclears",
-"connectTheDotsYeses",
-"connectTheDotsNos",
-"connectTheDotsUnclears"
-]
 
-theories = [
-  "submits",
-  "skips",
-  "dontGetIts",
-  'funny',
+joke_counts_columns = [
+  'joke_id',
+  'submits',
+  
+  'funnyYes',
+  'funnyNo',
+  'funnyKinda',
+  
   'vulgar',
+  
   'insult',
+  'wordPlay',
   'expectationViolation',
   'connectTheDots',
   'lens',
   'observation'
 ]
 
-//RESET SERVER
-createBlankJokeCounts = function () {
-  var obj = {joke_id: ""}
-  _.each(joke_count_categories, function(category){
-    obj[category] = 0
-  })
-  return obj
-}
 
-createBlankTheoryPoints = function () {
-  var obj = {joke_id: ""}
-  _.each(theories, function(theory){
-    obj[theory] = 0
+createBlankJokeCounts = function () {
+  var obj = {}
+  _.each(joke_counts_columns, function(column){
+    obj[column] = 0
   })
   return obj
 }
@@ -99,324 +72,47 @@ populateJokes = function (){
   //For each joke, insert a Joke and a corresponding JokeCount object.
   if (Jokes.find().count() === 0) {
     for (var i = 0; i < max_num_jokes; i++) {
-			//var thisItem = tweets[i] //jokes[i]
-			//thisItem.joke_text = thisItem.text
 			
+			//insert into Jokes
 			var thisItem = jokes2[i]
 			thisItem.joke_text = thisItem.text
-      var task_id = Jokes.insert(thisItem);
+			var jokeObj = {joke_text: thisItem.text}
+      var task_id = Jokes.insert(jokeObj);
       
-      
+      //establish JokeCounts
       var joke_counts = createBlankJokeCounts()
       joke_counts['joke_id'] = task_id
       JokeCounts.insert(joke_counts);
-      
-      var theory_points = createBlankTheoryPoints()
-      theory_points['joke_id'] = task_id
-      TheoryPoints.insert(theory_points);
-
     }
   }  
 }
+
+
 
 populateJokeSequences = function (){
   if (JokeSequences.find().count() === 0) { 
     joke_id_order = _.pluck(Jokes.find().fetch(), "_id")
     
-    var numSequences = 3
-    var offset = 5
-    var joke_id_set1 = joke_id_order.slice(0,offset)
-    var joke_id_set2 = joke_id_order.slice(offset,offset*2)
-    var joke_id_set3 = joke_id_order.slice(offset*2, offset*3)
-    var joke_id_set4 = joke_id_order.slice(offset*3, offset*4)
+    var joke_sequence1 = joke_id_order
+    var joke_sequence2 = _.shuffle(joke_id_order)
     
-    for(var i = 0; i<numSequences; i++){
-      //create a new sequence
-      var name = ""
-      if(i == 0){
-        name = "A"
-        sequence_idA = JokeSequences.insert({name: name})
-        
-      }
-      if(i == 1){
-        name = "B"
-        sequence_idB = JokeSequences.insert({name: name})
-      }
-      if(i == 2){
-        name = "C"
-        sequence_idC = JokeSequences.insert({name: name})
-      }
-      
-      //insert all items into JokesInSequence
-      if(i == 0){
-        var group = "A"
-        var sequence_id = sequence_idA
-        
-        //ROUND 1
-        _.each(joke_id_set1, function(joke_id, order){
-          var first = (order == 0)
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "insult",
-            state: "analysis"
-            })
-        })
-        _.each(joke_id_set2, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "connectTheDots",
-            state: "analysis"
-            })
-        })
-        /*
-         _.each(joke_id_set3, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*2
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "expectationViolation",
-            state: "analysis"
-            })
-        }) 
-        */
-        
-        //ROUND 2
-        _.each(joke_id_set3, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*2 //3
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "insult",
-            state: "peer review"
-            })
-        })
-        _.each(joke_id_set4, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*3 //4
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "connectTheDots",
-            state: "peer review"
-            })
-        })
-        /*
-         _.each(joke_id_set1, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*5
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "expectationViolation",
-            state: "peer review"
-            })
-        })  
-        */     
-      }
-      if(i == 1){
-        var group = "B"
-        var sequence_id = sequence_idB
-        _.each(joke_id_set3, function(joke_id, order){
-          var first = (order == 0)
-          var order = order 
-          JokesInSequence.insert({
-            sequence_id: sequence_idA, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "insult",
-            state: "analysis"
-            })
-        })
-        _.each(joke_id_set4, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*1
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "connectTheDots",
-            state: "analysis"
-            })
-        })
-        /*
-         _.each(joke_id_set1, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*2
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "expectationViolation",
-            state: "analysis"
-            })
-        })
-        */
-        
-        //ROUND 2
-        _.each(joke_id_set1, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*2//3
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "insult",
-            state: "peer review"
-            })
-        })
-        _.each(joke_id_set2, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*3//4
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "connectTheDots",
-            state: "peer review"
-            })
-        })
-        /*
-         _.each(joke_id_set2, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*5
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "expectationViolation",
-            state: "peer review"
-            })
-        }) 
-        */
-      }
-      if(i == 2){
-        var group = "C"
-        var sequence_id = sequence_idC
-        _.each(joke_id_set3, function(joke_id, order){
-          var first = (order == 0)
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "insult",
-            state: "analysis"
-            })
-        })
-        _.each(joke_id_set1, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "connectTheDots",
-            state: "analysis"
-            })
-        })
-        /*
-         _.each(joke_id_set2, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*2
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "expectationViolation",
-            state: "analysis"
-            })
-        })
-        */
-        
-                //ROUND 2
-        _.each(joke_id_set1, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*2//3
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "insult",
-            state: "peer review"
-            })
-        })
-        _.each(joke_id_set2, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*3//4
-          
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "connectTheDots",
-            state: "peer review"
-            })
-        })
-        /*
-         _.each(joke_id_set3, function(joke_id, order){
-          var first = (order == 0)
-          var order = order + offset*5
-          JokesInSequence.insert({
-            sequence_id: sequence_id, 
-            group: group,
-            joke_id: joke_id, 
-            sequence_index: order,
-            first: first,
-            type: "expectationViolation",
-            state: "peer review"
-            })
-        }) 
-        */
-      }
-    }
+    insertJokeSequence("A", joke_sequence1)
+    insertJokeSequence("B", joke_sequence2)    
   } 
 }
 
+insertJokeSequence = function(name, joke_sequence){
+   var sequence_id = JokeSequences.insert({name: name})
+
+  _.each(joke_sequence, function(joke_id, index){
+    JokesInSequence.insert({
+      sequence_id: sequence_id, 
+      name: name,
+      joke_id: joke_id, 
+      sequence_index: index,
+    })
+  })  
+}
 
 
 Meteor.startup(function () {	

@@ -1,3 +1,26 @@
+.btn.active, .btn:active {
+    background-color: #428bca;
+    color: #fff;
+    border-color: #357ebd;
+}
+
+
+.joke_text{
+  border: 1px solid black;
+  padding: 10px;
+}
+
+.title{
+  font-size: xx-large;
+  font-family: "arial black";
+  padding-bottom: 15px;
+}
+
+.sectionLabel{
+  font-weight: bold;
+}
+
+
 .analysis{
   margin-top: 20px;
 }
