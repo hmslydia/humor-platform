@@ -28,11 +28,11 @@ Router.map(function(){
     data: function(){      
       var index = parseInt(this.params.index)
       var hasAnother = false
-      if(index == 0){
+      if(index < 2){
         hasAnother = true
       }
       console.log({example: examples[index], hasAnotherExample: hasAnother})
-      return {example: examples[index], hasAnotherExample: hasAnother}
+      return {example: examples[index], hasAnotherExample: hasAnother, index: index}
     }
   }) 
   

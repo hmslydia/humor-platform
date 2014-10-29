@@ -19,8 +19,6 @@ Template.nextUp.events({
 
 goToNextPage = function (pageType, route, params) {  
   if( Meteor.user() ){    
-  
-    console.log("pageType:",pageType)
     var jokeId = Meteor.user().profile.currentJokeId   
 
     if (pageType == undefined){

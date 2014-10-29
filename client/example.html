@@ -32,7 +32,7 @@
         
         {{#if hasAnotherExample}}
            <div id="seeExample">
-             <button id='seeEx1' class="btn btn-primary btn-lg"><div>See Next Example</div></button>
+             <button id='seeNextExample' class="btn btn-primary btn-lg"><div>See Next Example</div></button>
              <br>
            </div>
         {{/if}}
@@ -47,10 +47,20 @@
 <template name="exampleAnalysis">
   <div class="row">
     <div class="col-md-1"></div>
-    <div class="col-md-2">    
-      <div class="btn {{buttonType}}" style="width: 150px; margin-bottom: 10px;">{{tag}}</div>
+    <div class="col-md-3">    
+    
+      <div class="btn-group" data-toggle="buttons">
+        <label class="btn {{buttonType}}" style="width: 160px; margin-bottom: 10px;">
+          {{tag}}
+        </label> 
+        <button class="btn btn-primary" id="{{reminder}}">?</button>
+      </div>
+    <!--
+      <span class="fakeButton {{buttonType}}" style="width: 160px; margin-bottom: 10px;">{{tag}}</span>
+      <button class="btn btn-primary" id="insultReminder">?</button>
+-->
     </div>
-    <div class="col-md-8">
+    <div class="col-md-7">
       <div style="margin-bottom: 10px">
         <span class="title">{{answer}}</span>
         {{{analysis}}}
